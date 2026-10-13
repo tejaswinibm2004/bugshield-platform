@@ -1,0 +1,15 @@
+{
+  "id": "c08-decoy-file",
+  "note": "Keywords match a decoy file that is correct; the real defect is elsewhere.",
+  "report": {
+    "title": "Checkout total is wrong after tax is applied",
+    "description": "the checkout total calculation is not working and shows an incorrect tax amount",
+    "page_url": "/checkout"
+  },
+  "expect": {
+    "file": "src/taxCalculator.js",
+    "type": "DIV_ZERO",
+    "validBug": true,
+    "patchable": true
+  }
+}

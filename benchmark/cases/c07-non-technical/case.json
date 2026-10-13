@@ -1,0 +1,15 @@
+{
+  "id": "c07-non-technical",
+  "note": "Non-defect report with no code signal at all.",
+  "report": {
+    "title": "Landing page hero looks outdated",
+    "description": "a design remark about colours and spacing, no malfunction was observed",
+    "page_url": "/"
+  },
+  "expect": {
+    "file": null,
+    "type": null,
+    "validBug": false,
+    "patchable": false
+  }
+}

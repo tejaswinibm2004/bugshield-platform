@@ -1,0 +1,15 @@
+{
+  "id": "c01-div-zero",
+  "note": "Guaranteed division by zero on a 100% discount.",
+  "report": {
+    "title": "Checkout total wrong with full discount",
+    "description": "checkout total calculation error when a 100 percent discount code is applied",
+    "page_url": "/checkout"
+  },
+  "expect": {
+    "file": "src/pricing.js",
+    "type": "DIV_ZERO",
+    "validBug": true,
+    "patchable": true
+  }
+}

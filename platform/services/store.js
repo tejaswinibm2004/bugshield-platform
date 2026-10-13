@@ -17,6 +17,7 @@ class Store {
     return {
       id: row.id,
       customerId: row.customer_id,
+      org_id: row.org_id || row.customer_id || null,
       name: row.name,
       type: row.type,
       port: row.port,
@@ -97,8 +98,8 @@ class Store {
 
   addApplication(app) {
     const stmt = db.prepare(`
-      INSERT INTO applications (id, customer_id, name, type, port, repo_url, branch, status, sdk_key, permissions, jenkins_status, docker_status, canary_threshold)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      INSERT INTO applications (id, customer_id, name, type, port, repo_url, branch, status, sdk_key, permissions, jenkins_status, docker_status, canary_threshold, org_id)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `);
     stmt.run(
       app.id,
@@ -113,7 +114,8 @@ class Store {
       JSON.stringify(app.permissions || { issueAccess: true, repoAccess: true, deploymentAccess: true }),
       app.jenkinsStatus || 'Connected & Verified',
       app.dockerStatus || 'Containerized (Active)',
-      app.canaryThreshold || '99.5%'
+      app.canaryThreshold || '99.5%',
+      app.orgId || app.customerId || null
     );
     return this.getApplication(app.id);
   }
@@ -131,8 +133,8 @@ class Store {
 
   addIssue(issue) {
     const stmt = db.prepare(`
-      INSERT INTO issues (id, application_id, title, description, page_url, steps_to_reproduce, stack_trace, logs, browser_info, status, root_cause, risk_level, risk_score, reported_at, resolved_at)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      INSERT INTO issues (id, application_id, title, description, page_url, steps_to_reproduce, stack_trace, logs, browser_info, status, root_cause, risk_level, risk_score, reported_at, resolved_at, org_id)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `);
     stmt.run(
       issue.id,
@@ -149,7 +151,8 @@ class Store {
       issue.riskLevel || '',
       issue.riskScore || 0,
       issue.reportedAt || new Date().toISOString(),
-      issue.resolvedAt || null
+      issue.resolvedAt || null,
+      issue.orgId || null
     );
     return this.getIssue(issue.id);
   }
@@ -199,8 +202,8 @@ class Store {
 
   addPatch(patch) {
     const stmt = db.prepare(`
-      INSERT INTO patches (id, issue_id, application_id, diff, description, status, patch_result, created_at, approved_at)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+      INSERT INTO patches (id, issue_id, application_id, diff, description, status, patch_result, created_at, approved_at, org_id)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `);
     stmt.run(
       patch.id,
@@ -211,7 +214,8 @@ class Store {
       patch.status || 'PENDING_APPROVAL',
       JSON.stringify(patch.patchResult || {}),
       patch.createdAt || new Date().toISOString(),
-      patch.approvedAt || null
+      patch.approvedAt || null,
+      patch.orgId || null
     );
     return this.getPatch(patch.id);
   }
@@ -248,8 +252,8 @@ class Store {
 
   addPipelineRun(run) {
     const stmt = db.prepare(`
-      INSERT INTO pipelines (id, issue_id, application_id, status, current_step, logs, started_at, completed_at)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+      INSERT INTO pipelines (id, issue_id, application_id, status, current_step, logs, started_at, completed_at, org_id)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
     `);
     stmt.run(
       run.id,
@@ -259,7 +263,8 @@ class Store {
       run.currentStep || 'DETECTION',
       JSON.stringify(run.logs || []),
       run.startedAt || new Date().toISOString(),
-      run.completedAt || null
+      run.completedAt || null,
+      run.orgId || null
     );
     return this.getPipelineRun(run.id);
   }
@@ -299,6 +304,84 @@ class Store {
   getPipelines() {
     const rows = db.prepare('SELECT * FROM pipelines ORDER BY started_at DESC').all();
     return rows.map(r => this._mapPipeline(r));
+  }
+
+  // ---- Validation evidence (real tool output, never fabricated) ----
+  addValidationRun(run) {
+    const stmt = db.prepare(`
+      INSERT INTO validation_runs (id, issue_id, application_id, patch_applied, syntax_passed, tests_ran, tests_passed, test_counts, security_passed, security_findings, dependency_audit, behaviour_verified, validation_passed, evidence, created_at, org_id)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `);
+    stmt.run(
+      run.id,
+      run.issueId,
+      run.applicationId,
+      run.patchApplied ? 1 : 0,
+      run.syntaxPassed ? 1 : 0,
+      run.testsRan ? 1 : 0,
+      run.testsPassed ? 1 : 0,
+      JSON.stringify(run.testCounts || null),
+      run.securityPassed ? 1 : 0,
+      JSON.stringify(run.securityFindings || []),
+      JSON.stringify(run.dependencyAudit || null),
+      run.behaviourVerified ? 1 : 0,
+      run.validationPassed ? 1 : 0,
+      JSON.stringify(run.evidence || {}),
+      run.createdAt || new Date().toISOString(),
+      run.orgId || null
+    );
+    return run;
+  }
+
+  getValidationRuns(issueId) {
+    const rows = issueId
+      ? db.prepare('SELECT * FROM validation_runs WHERE issue_id = ? ORDER BY created_at DESC').all(issueId)
+      : db.prepare('SELECT * FROM validation_runs ORDER BY created_at DESC').all();
+    return rows.map(r => ({
+      id: r.id,
+      issueId: r.issue_id,
+      applicationId: r.application_id,
+      patchApplied: !!r.patch_applied,
+      syntaxPassed: !!r.syntax_passed,
+      testsRan: !!r.tests_ran,
+      testsPassed: !!r.tests_passed,
+      testCounts: this._parseJSON(r.test_counts, null),
+      securityPassed: !!r.security_passed,
+      securityFindings: this._parseJSON(r.security_findings, []),
+      dependencyAudit: this._parseJSON(r.dependency_audit, null),
+      behaviourVerified: !!r.behaviour_verified,
+      validationPassed: !!r.validation_passed,
+      evidence: this._parseJSON(r.evidence, {}),
+      createdAt: r.created_at
+    }));
+  }
+
+  // ---- Deployment records ----
+  addDeployment(dep) {
+    const stmt = db.prepare(`
+      INSERT INTO deployments (id, issue_id, application_id, strategy, zero_downtime, status, health, rolled_back, backup_file, result, created_at, org_id)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `);
+    stmt.run(
+      dep.id, dep.issueId, dep.applicationId, dep.strategy || null,
+      dep.zeroDowntime ? 1 : 0, dep.status || 'UNKNOWN',
+      JSON.stringify(dep.health || null), dep.rolledBack ? 1 : 0,
+      dep.backupFile || null, JSON.stringify(dep.result || null),
+      dep.createdAt || new Date().toISOString(), dep.orgId || null
+    );
+    return dep;
+  }
+
+  getDeployments(issueId) {
+    const rows = issueId
+      ? db.prepare('SELECT * FROM deployments WHERE issue_id = ? ORDER BY created_at DESC').all(issueId)
+      : db.prepare('SELECT * FROM deployments ORDER BY created_at DESC').all();
+    return rows.map(r => ({
+      id: r.id, issueId: r.issue_id, applicationId: r.application_id,
+      strategy: r.strategy, zeroDowntime: !!r.zero_downtime, status: r.status,
+      health: this._parseJSON(r.health, null), rolledBack: !!r.rolled_back,
+      backupFile: r.backup_file, result: this._parseJSON(r.result, null), createdAt: r.created_at
+    }));
   }
 }
 

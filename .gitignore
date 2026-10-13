@@ -1,4 +1,20 @@
 node_modules/
 data/*.db*
+data/workspaces/
+data/outbox/
 .env
 .DS_Store
+test-web-1/config.js
+# Demo shop lives in its own repository (quickbyte-shop).
+test-web-1/
+# Local tooling / vendored runtimes — never source.
+Python/
+.playwright-mcp/
+
+# Agent worktrees / local build artefacts
+data/sources.json
+*.bugshield.bak
+*.tmp
+
+# Sandbox/validation output
+tmp/

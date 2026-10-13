@@ -1,0 +1,15 @@
+{
+  "id": "c05-no-defect",
+  "note": "Report claims a bug but the code is correct — a false-positive probe.",
+  "report": {
+    "title": "Cart total calculation is broken",
+    "description": "the cart total page shows a wrong total and the calculation is not working",
+    "page_url": "/cart"
+  },
+  "expect": {
+    "file": null,
+    "type": null,
+    "validBug": false,
+    "patchable": false
+  }
+}

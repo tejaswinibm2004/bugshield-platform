@@ -1,20 +1,25 @@
 {
-  "name": "multi-agent-bug-shield",
-  "version": "1.0.0",
-  "description": "Multi-Agent Driven Intelligent Bug Detection and Secure Deployment System",
-  "main": "server.js",
-  "type": "module",
-  "scripts": {
-    "start": "node server.js",
-    "dev": "node --watch server.js"
-  },
-  "dependencies": {
-    "cors": "^2.8.5",
-    "dotenv": "^16.4.5",
-    "express": "^4.21.2",
-    "ws": "^8.18.0"
-  },
-  "engines": {
-    "node": ">=20.0.0"
-  }
+    "name": "multi-agent-bug-shield",
+    "version": "1.0.0",
+    "description": "Multi-Agent Driven Intelligent Bug Detection and Secure Deployment System",
+    "main": "server.js",
+    "type": "module",
+    "scripts": {
+        "start": "node server.js",
+        "dev": "node --watch server.js",
+        "test": "node --test --test-concurrency=1 \"tests/**/*.test.mjs\"",
+        "eval": "node benchmark/run-eval.mjs",
+        "seed-corpus": "node benchmark/seed-corpus.mjs"
+    },
+    "dependencies": {
+        "cors": "^2.8.5",
+        "dotenv": "^16.4.5",
+        "express": "^4.21.2",
+        "marked": "^18.1.0",
+        "nodemailer": "^10.0.16",
+        "ws": "^8.18.0"
+    },
+    "engines": {
+        "node": ">=24.0.0"
+    }
 }

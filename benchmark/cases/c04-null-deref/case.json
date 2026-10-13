@@ -1,0 +1,15 @@
+{
+  "id": "c04-null-deref",
+  "note": "Variable initialised to null then dereferenced (detected, not auto-fixable).",
+  "report": {
+    "title": "User profile page crashes for guests",
+    "description": "loading the user profile without signing in throws a runtime error",
+    "page_url": "/profile"
+  },
+  "expect": {
+    "file": "src/profile.js",
+    "type": "NULL_DEREF",
+    "validBug": true,
+    "patchable": false
+  }
+}

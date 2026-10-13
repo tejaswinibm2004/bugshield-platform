@@ -300,43 +300,202 @@
       background: rgba(99, 102, 241, 0.15); border: 1px solid rgba(99, 102, 241, 0.3);
       color: #818cf8; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer;
     }
+    .btn-action:hover { background: rgba(99, 102, 241, 0.28); color: #fff; }
+    .btn-action:disabled { opacity: 0.55; cursor: wait; }
+    .btn-danger { background: rgba(244,63,94,0.15); border: 1px solid rgba(244,63,94,0.35); color: #fb7185; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; }
+    .btn-danger:hover { background: rgba(244,63,94,0.28); color: #fff; }
+    .btn-success { background: rgba(16,185,129,0.15); border: 1px solid rgba(16,185,129,0.35); color: #34d399; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; }
+    .btn-success:hover { background: rgba(16,185,129,0.28); color: #fff; }
+
+    /* ===== App shell: sidebar + topbar ===== */
+    .app-shell { display: flex; min-height: 100vh; }
+    .sidebar {
+      width: 248px; flex-shrink: 0;
+      background: rgba(11, 15, 25, 0.92);
+      border-right: 1px solid var(--card-border);
+      backdrop-filter: blur(16px);
+      position: sticky; top: 0; height: 100vh;
+      display: flex; flex-direction: column;
+      padding: 20px 14px;
+      transition: transform 0.25s ease;
+      z-index: 900;
+    }
+    .sidebar .brand { margin-bottom: 22px; padding: 0 8px; }
+    .nav-item {
+      display: flex; align-items: center; gap: 12px;
+      padding: 10px 12px; border-radius: 10px;
+      color: var(--text-secondary); font-size: 13.5px; font-weight: 600;
+      text-decoration: none; cursor: pointer; border: 1px solid transparent;
+      background: transparent; width: 100%; text-align: left; font-family: inherit;
+    }
+    .nav-item:hover { background: rgba(255,255,255,0.04); color: var(--text-primary); }
+    .nav-item.active { background: rgba(99,102,241,0.16); border-color: rgba(99,102,241,0.35); color: #c7d2fe; }
+    .nav-item .nav-ico { width: 22px; text-align: center; font-size: 16px; }
+    .nav-badge { margin-left: auto; background: rgba(245,158,11,0.2); color: #fbbf24; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 12px; }
+    .sidebar-foot { margin-top: auto; padding: 12px 8px 0 8px; font-size: 11px; color: var(--text-secondary); border-top: 1px solid var(--card-border); }
+    .main-col { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+    .topbar {
+      background: rgba(11, 15, 25, 0.85);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--card-border);
+      padding: 12px 28px;
+      display: flex; align-items: center; gap: 14px;
+      position: sticky; top: 0; z-index: 800;
+    }
+    .menu-btn { display: none; background: rgba(255,255,255,0.05); border: 1px solid var(--card-border); color: var(--text-primary); border-radius: 8px; padding: 7px 11px; cursor: pointer; font-size: 15px; }
+    .crumb { font-size: 13px; color: var(--text-secondary); }
+    .crumb strong { color: var(--text-primary); font-family: 'Outfit', sans-serif; }
+    .topbar-search {
+      margin-left: auto; background: rgba(255,255,255,0.04); border: 1px solid var(--card-border);
+      color: var(--text-primary); border-radius: 8px; padding: 8px 12px; font-size: 13px; width: 230px; font-family: inherit;
+    }
+    .topbar-search::placeholder { color: var(--text-secondary); }
+    .ws-dot { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 700; color: var(--text-secondary); }
+    .ws-dot .dot { width: 9px; height: 9px; border-radius: 50%; background: #64748b; }
+    .ws-dot.live .dot { background: #10b981; box-shadow: 0 0 8px rgba(16,185,129,0.8); }
+    .ws-dot.live { color: #34d399; }
+    .main-container { max-width: 1400px; margin: 28px auto; padding: 0 24px; width: 100%; }
+    .view { display: none; animation: fadein 0.22s ease; }
+    .view.active { display: block; }
+    @keyframes fadein { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+
+    /* ===== Stat cards ===== */
+    .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 28px; }
+    .stat-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 16px; padding: 18px; backdrop-filter: blur(10px); transition: transform 0.18s ease, border-color 0.18s ease; }
+    .stat-card:hover { transform: translateY(-2px); border-color: rgba(99,102,241,0.4); }
+    .stat-top { display: flex; align-items: center; gap: 10px; }
+    .stat-ico { width: 34px; height: 34px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 17px; background: rgba(255,255,255,0.05); }
+
+    /* ===== Filter bars, inputs ===== */
+    .toolbar { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 14px; }
+    .input, .select {
+      background: rgba(255,255,255,0.04); border: 1px solid var(--card-border);
+      color: var(--text-primary); border-radius: 8px; padding: 8px 12px; font-size: 13px; font-family: inherit;
+    }
+    .input::placeholder { color: var(--text-secondary); }
+    .input:focus, .select:focus, .topbar-search:focus, .nav-item:focus-visible, .btn-action:focus-visible { outline: 2px solid var(--accent-indigo); outline-offset: 1px; }
+    .select option { background: #0f172a; }
+    .table-wrap { overflow-x: auto; border-radius: 12px; }
+    tr.clickable { cursor: pointer; }
+    tr.clickable:hover td { background: rgba(99,102,241,0.06); }
+
+    /* ===== Pipeline stepper ===== */
+    .stepper { display: flex; align-items: flex-start; margin: 18px 0 6px 0; overflow-x: auto; padding-bottom: 8px; }
+    .step { flex: 1; min-width: 104px; text-align: center; position: relative; padding-top: 26px; font-size: 11px; font-weight: 700; color: var(--text-secondary); }
+    .step::before {
+      content: ''; position: absolute; top: 8px; left: 0; right: 0; height: 2px; background: rgba(255,255,255,0.12);
+    }
+    .step:first-child::before { left: 50%; } .step:last-child::before { right: 50%; }
+    .step::after {
+      content: ''; position: absolute; top: 2px; left: 50%; transform: translateX(-50%);
+      width: 14px; height: 14px; border-radius: 50%; background: #1e293b; border: 2px solid #475569;
+    }
+    .step.done { color: #34d399; } .step.done::after { background: #10b981; border-color: #10b981; }
+    .step.done::before { background: rgba(16,185,129,0.5); }
+    .step.running { color: #818cf8; } .step.running::after { background: #6366f1; border-color: #818cf8; box-shadow: 0 0 10px rgba(99,102,241,0.8); }
+    .step.failed { color: #fb7185; } .step.failed::after { background: #f43f5e; border-color: #f43f5e; }
+    .step.attn { color: #fbbf24; } .step.attn::after { background: #f59e0b; border-color: #fbbf24; box-shadow: 0 0 10px rgba(245,158,11,0.7); }
+
+    /* ===== Detail grids, timeline ===== */
+    .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .kv { display: grid; grid-template-columns: 150px 1fr; gap: 6px 12px; font-size: 13px; }
+    .kv dt { color: var(--text-secondary); font-weight: 600; } .kv dd { margin: 0; word-break: break-word; }
+    .timeline { border-left: 2px solid rgba(255,255,255,0.1); margin: 8px 0 0 6px; padding-left: 18px; }
+    .timeline-item { position: relative; padding: 8px 0; font-size: 13px; }
+    .timeline-item::before { content: ''; position: absolute; left: -24px; top: 12px; width: 10px; height: 10px; border-radius: 50%; background: var(--accent-indigo); }
+    .timeline-item.ok::before { background: #10b981; } .timeline-item.warn::before { background: #f59e0b; } .timeline-item.err::before { background: #f43f5e; }
+    .timeline-time { font-size: 11px; color: var(--text-secondary); }
+
+    /* ===== States ===== */
+    .empty-state { text-align: center; padding: 44px 20px; color: var(--text-secondary); border: 1px dashed var(--card-border); border-radius: 14px; font-size: 13.5px; }
+    .empty-state .big { font-size: 34px; margin-bottom: 10px; }
+    .error-state { text-align: center; padding: 30px; color: #fda4af; background: rgba(244,63,94,0.07); border: 1px solid rgba(244,63,94,0.3); border-radius: 14px; font-size: 13.5px; }
+    .skel { border-radius: 10px; background: linear-gradient(90deg, rgba(255,255,255,0.04) 25%, rgba(255,255,255,0.09) 50%, rgba(255,255,255,0.04) 75%); background-size: 200% 100%; animation: shimmer 1.2s infinite; min-height: 18px; margin: 8px 0; }
+    @keyframes shimmer { from { background-position: 200% 0; } to { background-position: -200% 0; } }
+    .hist-card { cursor: pointer; transition: transform 0.15s ease, border-color 0.15s ease; }
+    .hist-card:hover { transform: translateY(-2px); border-color: rgba(99,102,241,0.45); }
+    .pill-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+    .mini-pill { font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 12px; background: rgba(255,255,255,0.05); border: 1px solid var(--card-border); color: var(--text-secondary); }
+    .mini-pill.ok { color: #34d399; border-color: rgba(16,185,129,0.4); } .mini-pill.warn { color: #fbbf24; border-color: rgba(245,158,11,0.4); } .mini-pill.err { color: #fb7185; border-color: rgba(244,63,94,0.4); }
+
+    .backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.55); z-index: 890; display: none; }
+    .backdrop.show { display: block; }
+
+    @media (max-width: 1100px) {
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+      .metrics-bar { grid-template-columns: repeat(2, 1fr); }
+      .grid-2, .detail-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 860px) {
+      .sidebar { position: fixed; left: 0; top: 0; transform: translateX(-105%); box-shadow: 20px 0 60px rgba(0,0,0,0.5); }
+      .sidebar.open { transform: none; }
+      .menu-btn { display: inline-block; }
+      .topbar { padding: 12px 14px; }
+      .topbar-search { display: none; }
+      .main-container { padding: 0 14px; }
+      .pipeline-visualizer { flex-wrap: wrap; gap: 12px; }
+      .pipeline-visualizer::before { display: none; }
+      .kv { grid-template-columns: 1fr; }
+    }
   </style>
 </head>
 <body>
 
-  <header>
+  <div class="backdrop" id="side-backdrop" onclick="toggleSidebar(false)"></div>
+  <div class="app-shell">
+  <aside class="sidebar" id="sidebar">
     <div class="brand">
       <div class="brand-logo">BS</div>
       <div>
-        <div class="brand-title">BugShield Platform</div>
-        <div class="brand-subtitle">Multi-Agent Intelligent Bug Detection & Secure Hot Deployment SaaS</div>
+        <div class="brand-title">BugShield</div>
+        <div class="brand-subtitle">AI DevOps Platform</div>
       </div>
     </div>
-    <div class="nav-links">
-      <button class="btn-action" onclick="openRegisterModal()" style="font-size: 13px; padding: 10px 18px;">+ Connect New Website</button>
-    </div>
-  </header>
+    <nav id="main-nav">
+      <button class="nav-item" data-view="websites" onclick="go('websites')"><span class="nav-ico">🌐</span>My Websites</button>
+      <button class="nav-item active" data-view="dashboard" onclick="go('dashboard')"><span class="nav-ico">📊</span>Dashboard</button>
+      <button class="nav-item" data-view="bugs" onclick="go('bugs')"><span class="nav-ico">🐞</span>Bug Reports</button>
+      <button class="nav-item" data-view="analysis" onclick="go('analysis')"><span class="nav-ico">🧠</span>AI Analysis</button>
+      <button class="nav-item" data-view="patches" onclick="go('patches')"><span class="nav-ico">🩹</span>Patches</button>
+      <button class="nav-item" data-view="testing" onclick="go('testing')"><span class="nav-ico">🧪</span>Testing</button>
+      <button class="nav-item" data-view="deployments" onclick="go('deployments')"><span class="nav-ico">🚀</span>Deployments</button>
+      <button class="nav-item" data-view="approvals" onclick="go('approvals')"><span class="nav-ico">✅</span>Approvals<span class="nav-badge" id="nav-approval-count" style="display:none;">0</span></button>
+      <button class="nav-item" data-view="history" onclick="go('history')"><span class="nav-ico">📜</span>History</button>
+      <button class="nav-item" data-view="evaluation" onclick="go('evaluation')"><span class="nav-ico">📈</span>Evaluation</button>
+      <button class="nav-item" data-view="activity" onclick="go('activity')"><span class="nav-ico">📡</span>Activity Logs</button>
+      <button class="nav-item" data-view="settings" onclick="go('settings')"><span class="nav-ico">⚙️</span>Settings</button>
+    </nav>
+    <div class="sidebar-foot">BugShield SaaS · 5-agent pipeline<br><span id="side-ws">● connecting…</span></div>
+  </aside>
+
+  <div class="main-col">
+  <div class="topbar">
+    <button class="menu-btn" onclick="toggleSidebar()" aria-label="Open navigation">☰</button>
+    <div class="crumb"><span id="crumb-parent">BugShield</span> / <strong id="crumb-current">Dashboard</strong></div>
+    <input class="topbar-search" id="global-search" placeholder="Search bugs…" oninput="globalSearch(this.value)">
+    <span class="ws-dot" id="ws-status"><span class="dot"></span><span id="ws-label">offline</span></span>
+    <span id="session-user" style="font-size:12px;color:var(--text-secondary);"></span>
+    <button class="btn-action" onclick="doLogout()">Sign out</button>
+    <button class="btn-action" id="connect-website-btn" onclick="openRegisterModal()" style="font-size: 13px; padding: 9px 16px;">+ Connect Website</button>
+  </div>
 
   <div class="main-container">
+  <section class="view active" id="view-dashboard">
 
-    <!-- Key SaaS Metrics -->
-    <div class="metrics-bar">
-      <div class="metric-card">
-        <div class="metric-label">Registered Applications</div>
-        <div class="metric-val" style="color: #818cf8;" id="m-apps">0 Connected</div>
-      </div>
-      <div class="metric-card">
-        <div class="metric-label">Reported End-User Issues</div>
-        <div class="metric-val" style="color: #38bdf8;" id="m-issues">0 Received</div>
-      </div>
-      <div class="metric-card">
-        <div class="metric-label">AI Patches Hot-Deployed</div>
-        <div class="metric-val" style="color: #34d399;" id="m-patches">0 Deployed</div>
-      </div>
-      <div class="metric-card">
-        <div class="metric-label">Canary Health Guarantee</div>
-        <div class="metric-val" style="color: #a78bfa;">99.9% Uptime</div>
-      </div>
+    <!-- System overview stats (real API data) -->
+    <div class="stats-grid" id="stats-grid">
+      <div class="stat-card"><div class="stat-top"><div class="stat-ico">🐞</div><div class="metric-label">Total Bugs</div></div><div class="metric-val" id="m-total">—</div></div>
+      <div class="stat-card"><div class="stat-top"><div class="stat-ico">🔴</div><div class="metric-label">Critical Bugs</div></div><div class="metric-val" style="color:#fb7185;" id="m-critical">—</div></div>
+      <div class="stat-card"><div class="stat-top"><div class="stat-ico">🟠</div><div class="metric-label">High Risk Bugs</div></div><div class="metric-val" style="color:#fbbf24;" id="m-high">—</div></div>
+      <div class="stat-card"><div class="stat-top"><div class="stat-ico">🟢</div><div class="metric-label">Bugs Fixed</div></div><div class="metric-val" style="color:#34d399;" id="m-fixed">—</div></div>
+      <div class="stat-card"><div class="stat-top"><div class="stat-ico">⏳</div><div class="metric-label">Pending Approvals</div></div><div class="metric-val" style="color:#fbbf24;" id="m-pending">—</div></div>
+      <div class="stat-card"><div class="stat-top"><div class="stat-ico">🚀</div><div class="metric-label">Successful Deployments</div></div><div class="metric-val" style="color:#38bdf8;" id="m-deployed">—</div></div>
+      <div class="stat-card"><div class="stat-top"><div class="stat-ico">⚠️</div><div class="metric-label">Failed / Invalid</div></div><div class="metric-val" style="color:#fb7185;" id="m-failed">—</div></div>
+      <div class="stat-card"><div class="stat-top"><div class="stat-ico">📱</div><div class="metric-label">Applications</div></div><div class="metric-val" style="color:#818cf8;" id="m-apps">—</div></div>
+    </div>
+    <div class="metrics-bar" style="display:none;">
+      <div class="metric-card"><div class="metric-label">Reported End-User Issues</div><div class="metric-val" id="m-issues">0 Received</div></div>
+      <div class="metric-card"><div class="metric-label">AI Patches Hot-Deployed</div><div class="metric-val" id="m-patches">0 Deployed</div></div>
     </div>
 
     <!-- Admin Review High Risk Banner -->
@@ -405,43 +564,219 @@
       </div>
     </div>
 
-    <!-- Onboarded Applications & Issues Grid -->
-    <div class="grid-2">
-      <!-- Registered Customer Apps -->
-      <div class="card">
-        <div class="section-header">
-          <h2 class="section-title">📱 Registered Customer Applications</h2>
-          <button class="btn-action" onclick="openRegisterModal()">+ Register New App</button>
-        </div>
-        <div id="customer-apps-container">
-          <!-- Populated dynamically -->
-        </div>
+    <!-- Dashboard: bug overview, agents, apps -->
+    <div class="card" style="margin-bottom:24px;">
+      <div class="section-header">
+        <h2 class="section-title">🐞 Bug Overview <span style="font-size:12px;color:var(--text-secondary);font-weight:500;">recent reports, click a row for details</span></h2>
+        <button class="btn-action" onclick="go('bugs')">View all →</button>
       </div>
+      <div class="table-wrap"><table class="data-table">
+        <thead><tr><th>Bug ID</th><th>Title</th><th>Severity</th><th>Status</th><th>Date</th><th>Stage</th></tr></thead>
+        <tbody id="recent-table-body"><tr><td colspan="6"><div class="skel"></div><div class="skel"></div></td></tr></tbody>
+      </table></div>
+    </div>
 
-      <!-- Issues Management Feed -->
-      <div class="card">
-        <div class="section-header">
-          <h2 class="section-title">⚡ Active Unresolved Bug Feed</h2>
-          <button class="btn-action" onclick="loadIssues()">Refresh</button>
-        </div>
-        <table class="data-table">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Application</th>
-              <th>Issue Summary</th>
-              <th>Risk</th>
-              <th>Status</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody id="issues-table-body">
-            <!-- Populated dynamically -->
-          </tbody>
-        </table>
+    <div class="card" style="margin-bottom:24px;">
+      <div class="section-header">
+        <h2 class="section-title">🤖 AI Agent Monitoring</h2>
+        <span class="badge badge-indigo">live status</span>
+      </div>
+      <div class="stats-grid" id="agent-grid" style="grid-template-columns:repeat(5,1fr);margin-bottom:0;">
+        <div class="stat-card"><div class="stat-top"><div class="stat-ico">🔍</div><div><div style="font-size:12.5px;font-weight:700;">Bug Detection</div><div style="font-size:11px;color:var(--text-secondary);">AGENT-DETECTOR-01</div></div></div><div class="mini-pill" id="ag-st-det" style="margin-top:10px;display:inline-block;">Idle</div><div style="font-size:11.5px;color:var(--text-secondary);margin-top:8px;" id="ag-task-det">Awaiting reports</div></div>
+        <div class="stat-card"><div class="stat-top"><div class="stat-ico">⚖️</div><div><div style="font-size:12.5px;font-weight:700;">Risk Classifier</div><div style="font-size:11px;color:var(--text-secondary);">AGENT-RISK-02</div></div></div><div class="mini-pill" id="ag-st-risk" style="margin-top:10px;display:inline-block;">Idle</div><div style="font-size:11.5px;color:var(--text-secondary);margin-top:8px;" id="ag-task-risk">Awaiting analysis</div></div>
+        <div class="stat-card"><div class="stat-top"><div class="stat-ico">🩹</div><div><div style="font-size:12.5px;font-weight:700;">Patch Generator</div><div style="font-size:11px;color:var(--text-secondary);">AGENT-PATCH-03</div></div></div><div class="mini-pill" id="ag-st-patch" style="margin-top:10px;display:inline-block;">Idle</div><div style="font-size:11.5px;color:var(--text-secondary);margin-top:8px;" id="ag-task-patch">No patch task</div></div>
+        <div class="stat-card"><div class="stat-top"><div class="stat-ico">🧪</div><div><div style="font-size:12.5px;font-weight:700;">CI/CD Pipeline</div><div style="font-size:11px;color:var(--text-secondary);">AGENT-PIPELINE-04</div></div></div><div class="mini-pill" id="ag-st-pipe" style="margin-top:10px;display:inline-block;">Waiting</div><div style="font-size:11.5px;color:var(--text-secondary);margin-top:8px;" id="ag-task-pipe">No build running</div></div>
+        <div class="stat-card"><div class="stat-top"><div class="stat-ico">🚀</div><div><div style="font-size:12.5px;font-weight:700;">Canary Deploy</div><div style="font-size:11px;color:var(--text-secondary);">AGENT-CANARY-05</div></div></div><div class="mini-pill" id="ag-st-can" style="margin-top:10px;display:inline-block;">Waiting</div><div style="font-size:11.5px;color:var(--text-secondary);margin-top:8px;" id="ag-task-can">No deployment</div></div>
       </div>
     </div>
 
+    <div class="card">
+      <div class="section-header">
+        <h2 class="section-title">📱 Registered Customer Applications</h2>
+        <button class="btn-action" onclick="openRegisterModal()">+ Register New App</button>
+      </div>
+      <div id="customer-apps-container"></div>
+    </div>
+  </section>
+
+  <section class="view" id="view-bugs">
+    <div class="card">
+      <div class="section-header"><h2 class="section-title">🐞 Bug Reports</h2><button class="btn-action" onclick="loadIssues()">↻ Refresh</button></div>
+      <div class="toolbar">
+        <input class="input" id="bugs-q" placeholder="Search Bug ID, title, description…" style="flex:1;min-width:200px;" oninput="renderBugsView()">
+        <select class="select" id="bugs-sev" onchange="renderBugsView()"><option value="">All severities</option><option>Critical</option><option>High</option><option>Low</option><option>None</option></select>
+        <select class="select" id="bugs-status" onchange="renderBugsView()"><option value="">All statuses</option><option>RECEIVED</option><option>IN_ANALYSIS</option><option>AWAITING_ADMIN_APPROVAL</option><option>APPROVED_BY_ADMIN</option><option>RESOLVED_AND_DEPLOYED</option><option>INVALID_REPORT</option><option>REJECTED_BY_ADMIN</option><option>PATCH_FAILED</option><option>VALIDATION_FAILED</option><option>ROLLED_BACK</option><option>SOURCE_UNAVAILABLE</option><option>LOCATION_NOT_FOUND</option><option>FAILED</option></select>
+        <select class="select" id="bugs-sort" onchange="renderBugsView()"><option value="new">Newest first</option><option value="old">Oldest first</option><option value="sev">Highest severity</option><option value="upd">Recently updated</option></select>
+      </div>
+      <div id="bugs-error"></div>
+      <div class="table-wrap"><table class="data-table">
+        <thead><tr><th>Bug ID</th><th>Title</th><th>Severity</th><th>Status</th><th>Created</th><th>File</th><th>Deployment</th></tr></thead>
+        <tbody id="issues-table-body"><tr><td colspan="7"><div class="skel"></div><div class="skel"></div></td></tr></tbody>
+      </table></div>
+    </div>
+  </section>
+
+  <section class="view" id="view-bugdetail">
+    <button class="btn-action" id="bugdetail-back" onclick="go('bugs')" style="margin-bottom:14px;">← Back</button>
+    <div id="bugdetail-content"><div class="card"><div class="skel"></div><div class="skel"></div><div class="skel"></div></div></div>
+  </section>
+
+  <section class="view" id="view-analysis">
+    <div class="card">
+      <div class="section-header"><h2 class="section-title">🧠 AI Analysis</h2><span style="font-size:12px;color:var(--text-secondary);">root cause & risk from the backend</span></div>
+      <div id="analysis-list"><div class="skel"></div><div class="skel"></div></div>
+    </div>
+  </section>
+
+  <section class="view" id="view-patches">
+    <div class="card">
+      <div class="section-header"><h2 class="section-title">🩹 Patch Generation</h2><span style="font-size:12px;color:var(--text-secondary);">real diffs only</span></div>
+      <div id="patches-list"><div class="skel"></div><div class="skel"></div></div>
+    </div>
+  </section>
+
+  <section class="view" id="view-testing">
+    <div class="card">
+      <div class="section-header"><h2 class="section-title">🧪 Testing / Validation</h2><span style="font-size:12px;color:var(--text-secondary);">parsed from pipeline logs</span></div>
+      <div id="testing-list"><div class="skel"></div><div class="skel"></div></div>
+    </div>
+  </section>
+
+  <section class="view" id="view-deployments">
+    <div class="card">
+      <div class="section-header"><h2 class="section-title">🚀 Deployments</h2><span style="font-size:12px;color:var(--text-secondary);">canary → production</span></div>
+      <div id="deployments-list"><div class="skel"></div><div class="skel"></div></div>
+    </div>
+  </section>
+
+  <section class="view" id="view-approvals">
+    <div class="card">
+      <div class="section-header"><h2 class="section-title">✅ Admin Approvals</h2><span style="font-size:12px;color:var(--text-secondary);">high-risk changes awaiting review</span></div>
+      <div id="approvals-list"><div class="skel"></div></div>
+    </div>
+  </section>
+
+  <section class="view" id="view-history">
+    <div class="card">
+      <div class="section-header"><h2 class="section-title">📜 History <span style="font-size:12px;color:var(--text-secondary);font-weight:500;">completed workflows, persisted in database</span></h2></div>
+      <div class="toolbar">
+        <input class="input" id="hist-q" placeholder="Search Bug ID, title, description, deployment ID…" style="flex:1;min-width:200px;" oninput="renderHistory()">
+        <select class="select" id="hist-sev" onchange="renderHistory()"><option value="">All severities</option><option>Critical</option><option>High</option><option>Low</option><option>None</option></select>
+        <select class="select" id="hist-status" onchange="renderHistory()"><option value="">All results</option><option>Successful</option><option>Failed</option><option>In Progress</option></select>
+        <select class="select" id="hist-dep" onchange="renderHistory()"><option value="">All deployments</option><option>Deployed</option><option>Failed</option><option>Not Deployed</option></select>
+        <select class="select" id="hist-sort" onchange="renderHistory()"><option value="new">Newest first</option><option value="old">Oldest first</option><option value="sev">Highest severity</option><option value="upd">Recently updated</option></select>
+      </div>
+      <div id="history-error"></div>
+      <div id="history-list"><div class="skel"></div><div class="skel"></div><div class="skel"></div></div>
+    </div>
+  </section>
+
+  <section class="view" id="view-evaluation">
+    <div class="card">
+      <div class="section-header"><h2 class="section-title">📈 Evaluation Results <span style="font-size:12px;color:var(--text-secondary);font-weight:500;">measured by benchmark/run-eval.mjs</span></h2><button class="btn-action" onclick="renderEvaluation()">↻ Refresh</button></div>
+      <div id="evaluation-list"><div class="skel"></div><div class="skel"></div></div>
+    </div>
+    <div class="card">
+      <div class="section-header"><h2 class="section-title">⚖️ Risk Scoring Model <span style="font-size:12px;color:var(--text-secondary);font-weight:500;">weights published from running code</span></h2></div>
+      <div id="risk-model"><div class="skel"></div></div>
+    </div>
+  </section>
+
+  <section class="view" id="view-websites">
+    <div class="card">
+      <div class="section-header">
+        <h2 class="section-title">🌐 My Websites</h2>
+        <span style="font-size:12px;color:var(--text-secondary);">The sites connected to your organisation</span>
+      </div>
+      <div id="websites-body"><div class="skel"></div><div class="skel"></div></div>
+    </div>
+  </section>
+
+  <section class="view" id="view-activity">
+    <div class="card">
+      <div class="section-header"><h2 class="section-title">📡 Activity Logs</h2><button class="btn-action" onclick="renderActivity()">↻ Refresh</button></div>
+      <div class="timeline" id="activity-list"><div class="skel"></div><div class="skel"></div></div>
+    </div>
+  </section>
+
+  <section class="view" id="view-settings">
+    <!-- Change password -->
+    <div class="card">
+      <div class="section-header"><h2 class="section-title">🔐 Change password</h2></div>
+      <p style="font-size:12.5px;color:var(--text-secondary);margin:0 0 4px 0;">
+        Signing in as <b id="settings-who">—</b>. Changing your password signs out your other sessions.
+      </p>
+      <div class="toolbar" style="align-items:flex-start;">
+        <input class="input" id="pw-current" type="password" placeholder="Current password" autocomplete="current-password" style="min-width:210px;">
+        <input class="input" id="pw-new" type="password" placeholder="New password (min 12 characters)" autocomplete="new-password" style="min-width:240px;">
+        <input class="input" id="pw-confirm" type="password" placeholder="Confirm new password" autocomplete="new-password" style="min-width:210px;">
+        <button class="btn-success" id="pw-submit" onclick="changePassword()">Update password</button>
+      </div>
+      <div id="pw-msg" style="font-size:13px;margin-top:6px;"></div>
+    </div>
+
+    <!-- Members -->
+    <div class="card">
+      <div class="section-header">
+        <h2 class="section-title">👥 Members</h2>
+        <span style="font-size:12px;color:var(--text-secondary);">Owner and Admin can invite or remove members</span>
+      </div>
+      <div id="members-perm" style="display:none;margin-bottom:12px;">
+        <div class="toolbar" style="align-items:flex-start;margin-bottom:0;">
+          <input class="input" id="inv-email" type="email" placeholder="teammate@company.com" style="min-width:220px;">
+          <input class="input" id="inv-name" placeholder="Display name (optional)" style="min-width:170px;">
+          <select class="select" id="inv-role">
+            <option value="viewer">Viewer — read only</option>
+            <option value="reviewer">Reviewer — view + approve patches</option>
+            <option value="developer">Developer — create projects, cannot approve</option>
+            <option value="admin">Admin — manage members, policy, deployments</option>
+            <option value="owner">Owner — full control</option>
+          </select>
+          <input class="input" id="inv-pass" type="password" placeholder="Confirm your password" autocomplete="current-password" style="min-width:180px;">
+          <button class="btn-success" id="inv-submit" onclick="inviteMember()">Send invite</button>
+        </div>
+        <div style="font-size:11.5px;color:var(--text-secondary);margin-top:4px;">
+          An invitation email is only sent after you confirm your own password. Mail delivery: <span id="mail-status">checking…</span>
+        </div>
+        <div id="inv-msg" style="font-size:13px;margin-top:6px;"></div>
+      </div>
+      <div class="table-wrap"><table class="data-table">
+        <thead><tr><th>Member</th><th>Email</th><th>Role</th><th>Status</th><th>Action</th></tr></thead>
+        <tbody id="members-body"><tr><td colspan="5"><div class="skel"></div></td></tr></tbody>
+      </table></div>
+    </div>
+
+    <!-- Projects -->
+    <div class="card">
+      <div class="section-header"><h2 class="section-title">📁 Projects</h2></div>
+      <div id="projects-perm" style="margin-bottom:12px;">
+        <div class="toolbar" style="align-items:flex-start;margin-bottom:0;">
+          <input class="input" id="proj-name" placeholder="New project name" style="min-width:230px;">
+          <button class="btn-action" onclick="createProject()">+ Create project</button>
+        </div>
+        <div id="proj-msg" style="font-size:13px;margin-top:6px;"></div>
+      </div>
+      <div class="table-wrap"><table class="data-table">
+        <thead><tr><th>Project</th><th>Slug</th><th>Created</th></tr></thead>
+        <tbody id="projects-body"><tr><td colspan="3"><div class="skel"></div></td></tr></tbody>
+      </table></div>
+    </div>
+
+    <!-- Platform info -->
+    <div class="card">
+      <div class="section-header"><h2 class="section-title">⚙️ Platform</h2></div>
+      <dl class="kv">
+        <dt>Backend URL</dt><dd><code id="set-backend">—</code></dd>
+        <dt>Real-time channel</dt><dd>WebSocket auto-reconnect (2s)</dd>
+        <dt>Persistence</dt><dd>SQLite <code>data/bugshield.db</code> — history survives refresh</dd>
+        <dt>Risk policy</dt><dd id="set-policy">—</dd>
+        <dt>Integrations</dt><dd id="set-integrations">—</dd>
+      </dl>
+    </div>
+  </section>
+
+  </div>
+  </div>
   </div>
 
   <!-- Modal for Source Code & Website Patch Inspection -->
@@ -468,6 +803,35 @@
 
   <script>
     const BACKEND_URL = window.BACKEND_URL || window.location.origin;
+
+    /* Auth-aware fetch: always sends the CSRF header and redirects to /login on 401. */
+    async function apiFetch(url, options = {}) {
+      const opts = { credentials: 'same-origin', ...options };
+      opts.headers = { 'X-Requested-With': 'bugshield', ...(options.headers || {}) };
+      if (opts.body && typeof opts.body === 'string' && !opts.headers['Content-Type']) {
+        opts.headers['Content-Type'] = 'application/json';
+      }
+      const res = await fetch(url, opts);
+      if (res.status === 401) { location.replace('/login'); throw new Error('unauthenticated'); }
+      return res;
+    }
+
+    // Session gate before anything else renders.
+    // NOTE: only a failed/negative auth check redirects to /login. UI init
+    // errors below are caught separately — they must never look like a logout,
+    // or the dashboard and login pages bounce off each other in a reload loop.
+    apiFetch('/api/v1/auth/me').then(r => r.json()).then(d => {
+      if (!d.success) { location.replace('/login'); return; }
+      window.SESSION = d;
+      try {
+        applyRoleNavigation();
+        const u = document.getElementById('session-user');
+        if (u) u.textContent = `${d.user.displayName} · ${d.role} · ${d.organization.name}`;
+        if (isViewer()) { location.hash = '#/websites'; route(); }
+      } catch (err) {
+        console.error('Dashboard init failed:', err);
+      }
+    }).catch(() => { location.replace('/login'); });
     let activeIssueId = null;
     let ws;
 
@@ -546,7 +910,8 @@
 
       try {
         const res = await fetch(`/api/v1/issues/${issueId}/patch`);
-        const patch = await res.json();
+        const raw = await res.json();
+        const patch = patchInfo(raw);
         currentModalPatch = patch;
 
         if (patch) {
@@ -570,10 +935,17 @@
     function connectWebSocket() {
       const backendHost = BACKEND_URL.replace(/^https?:\/\//, '');
       const protocol = BACKEND_URL.startsWith('https:') ? 'wss:' : 'ws:';
+      const setWs = live => {
+        const d = document.getElementById('ws-status');
+        if (d) { d.classList.toggle('live', live); document.getElementById('ws-label').textContent = live ? 'live' : 'offline'; }
+        const s = document.getElementById('side-ws');
+        if (s) s.textContent = live ? '● live pipeline stream' : '● reconnecting…';
+      };
       ws = new WebSocket(`${protocol}//${backendHost}`);
 
       ws.onopen = () => {
         console.log('[WS] Connected to BugShield Multi-Agent Stream');
+        setWs(true);
       };
 
       ws.onmessage = (event) => {
@@ -581,7 +953,8 @@
         handleWsEvent(msg);
       };
 
-      ws.onclose = () => setTimeout(connectWebSocket, 2000);
+      ws.onclose = () => { setWs(false); setTimeout(connectWebSocket, 2000); };
+      ws.onerror = () => { setWs(false); };
     }
 
     function handleWsEvent(msg) {
@@ -597,13 +970,22 @@
         document.getElementById('admin-review-banner').classList.add('show');
         document.getElementById('pipeline-state-badge').className = 'badge badge-amber';
         document.getElementById('pipeline-state-badge').textContent = 'Paused (Awaiting Admin Review)';
+        setAgent('can', 'Approval Required', 'Paused for #' + payload.issueId);
+        loadIssues(true);
       } else if (type === 'ADMIN_APPROVED') {
         document.getElementById('admin-review-banner').classList.remove('show');
       } else if (type === 'PIPELINE_FINISHED') {
         document.getElementById('pipeline-state-badge').className = 'badge badge-success';
         document.getElementById('pipeline-state-badge').textContent = 'Resolved & Hot-Deployed Live';
-        loadIssues();
+        if (payload.status === 'SUCCESS') { setAgent('can', 'Deployed', 'Live for #' + payload.issueId); setAgent('pipe', 'Passed', 'Build passed'); }
+        else if (payload.status === 'INVALID_REPORT') { setAgent('det', 'Completed', 'Invalid report #' + payload.issueId); }
+        loadIssues(true);
         loadApps();
+        loadPipelines();
+      } else if (type === 'PIPELINE_FAILED') {
+        document.getElementById('pipeline-state-badge').className = 'badge badge-rose';
+        document.getElementById('pipeline-state-badge').textContent = 'Pipeline Failed';
+        loadIssues(true);
       }
     }
 
@@ -634,13 +1016,17 @@
         if (status === 'IN_PROGRESS') {
           node.className = 'agent-node active';
           statusEl.textContent = 'Analyzing...';
+          const ak = AG_STEP_AGENT[step];
+          if (ak) setAgent(ak, AG_RUN_LABEL[ak] || 'Processing', step.replace(/_/g, ' ').toLowerCase());
         } else if (status === 'COMPLETED') {
           node.className = 'agent-node completed';
           statusEl.textContent = 'Completed';
+          const ak = AG_STEP_AGENT[step];
+          if (ak) setAgent(ak, ak === 'pipe' ? 'Passed' : 'Completed', step.replace(/_/g, ' ').toLowerCase() + ' done');
 
           if (step === 'PATCH_GENERATION' && result) {
-            currentLivePatch = result;
-            document.getElementById('active-target-file').textContent = `Target File: ${result.targetFileRel || 'Source'}`;
+            currentLivePatch = patchInfo(result);
+            document.getElementById('active-target-file').textContent = `Target File: ${currentLivePatch.targetFileRel || 'Source'}`;
             document.getElementById('patch-desc-label').textContent = result.description || 'Patch synthesized';
             switchPatchTab(currentLiveTab);
           }
@@ -650,6 +1036,7 @@
 
     function appendLogs(logsArray) {
       const term = document.getElementById('agent-logs-terminal');
+      window.RECENT_LOGS = (window.RECENT_LOGS || []).concat(logsArray).slice(-60);
       logsArray.forEach(l => {
         const line = document.createElement('div');
         line.className = 'terminal-line';
@@ -662,7 +1049,7 @@
     async function approveHighRiskPatch() {
       if (!activeIssueId) return;
       try {
-        const res = await fetch(`/api/v1/issues/${activeIssueId}/approve`, { method: 'POST' });
+        const res = await apiFetch(`/api/v1/issues/${activeIssueId}/approve`, { method: 'POST' });
         const data = await res.json();
         if (data.success) {
           document.getElementById('admin-review-banner').classList.remove('show');
@@ -677,6 +1064,7 @@
       try {
         const res = await fetch('/api/v1/apps');
         const apps = await res.json();
+        ALL_APPS = apps;
         document.getElementById('m-apps').textContent = `${apps.length} Connected`;
         
         const container = document.getElementById('customer-apps-container');
@@ -685,31 +1073,86 @@
           return;
         }
 
-        container.innerHTML = apps.map(app => `
+container.innerHTML = apps.map(app => `
           <div class="app-card">
             <div class="app-header">
               <div>
-                <div class="app-title">${app.name} <span style="font-size:12px; color:var(--accent-indigo);">(${app.id})</span></div>
-                <div style="font-size:12px; color:var(--text-secondary); margin-top:2px;">SDK Key: <code style="color:#a7f3d0; background:rgba(0,0,0,0.3); padding:2px 6px; border-radius:4px;">${app.sdkKey}</code></div>
+                <div class="app-title">${esc(app.name)} <span style="font-size:12px;color:var(--accent-indigo);">(${esc(app.id)})</span></div>
+                <div style="font-size:12px;color:var(--text-secondary);margin-top:2px;">SDK Key: <code style="color:#a7f3d0; background:rgba(0,0,0,0.3); padding:2px 6px; border-radius:4px;">${esc(app.sdkKey)}</code></div>
               </div>
-              <span class="badge badge-success">${app.status}</span>
+              <span class="badge badge-success">${esc(app.status)}</span>
             </div>
+            <div id="src-${esc(app.id)}" style="font-size:12px;margin:8px 0;"><span style="color:var(--text-secondary);">Checking source code…</span></div>
             <div style="font-size:12px; margin-top:8px;">
-              <div><strong>Repo:</strong> ${app.repoUrl}</div>
-              <div><strong>Jenkins Integration:</strong> ${app.jenkinsStatus}</div>
-              <div><strong>Docker Deployment:</strong> ${app.dockerStatus}</div>
+              <div><strong>Repo:</strong> ${esc(app.repoUrl)}</div>
+              <div><strong>Jenkins Integration:</strong> ${esc(app.jenkinsStatus)}</div>
+              <div><strong>Docker Deployment:</strong> ${esc(app.dockerStatus)}</div>
             </div>
             <div style="margin-top:10px; display:flex; align-items:center; justify-content:space-between; gap:10px; background:rgba(0,0,0,0.4); padding:10px 12px; border-radius:8px; border:1px solid var(--card-border);">
               <div style="font-size:11px; color:var(--text-secondary); font-family:'Fira Code', monospace; flex:1; overflow-x:auto;">
                 &lt;script src="${BACKEND_URL}/sdk/bug-shield-sdk.js"&gt;&lt;/script&gt;<br/>
-                &lt;script&gt;BugShieldSDK.init({ appId: '${app.id}', sdkKey: '${app.sdkKey}' });&lt;/script&gt;
+                &lt;script&gt;BugShieldSDK.init({ appId: '${esc(app.id)}', sdkKey: '${esc(app.sdkKey)}' });&lt;/script&gt;
               </div>
-              <button class="btn-action" onclick="copySnippet('${app.id}', '${app.sdkKey}', this)" style="font-size:12px; padding:6px 14px; white-space:nowrap; background:var(--accent-indigo);">📋 Copy Code</button>
+              <button class="btn-action" onclick="copySnippet('${esc(app.id)}', '${esc(app.sdkKey)}', this)" style="font-size:12px; padding:6px 14px; white-space:nowrap; background:var(--accent-indigo);">📋 Copy Code</button>
             </div>
           </div>
         `).join('');
+
+        // Show, per application, whether the platform can actually read its source code
+        for (const app of apps) {
+          const box = document.getElementById(`src-${app.id}`);
+          if (!box) continue;
+          try {
+            const r = await fetch(`/api/v1/apps/${app.id}/source`);
+            const d = await r.json();
+            if (d.success && d.source) {
+              box.innerHTML = `<div style="color:#34d399;">✓ Source connected — <b>${d.source.fileCount}</b> file(s) indexed via <code>${esc(d.source.via)}</code></div>
+                <div style="color:var(--text-secondary);font-family:'Fira Code',monospace;font-size:11px;margin-top:2px;word-break:break-all;">${esc(d.source.root)}</div>`;
+            } else {
+              box.innerHTML = `<div style="color:#fbbf24;">⚠ No source code connected — agents cannot analyse this site yet.</div>
+                <div style="color:var(--text-secondary);font-size:11px;margin:2px 0 6px 0;">${esc(d.error || '')}</div>
+                <div style="display:flex;gap:6px;flex-wrap:wrap;">
+                  <input class="input" id="sp-${esc(app.id)}" placeholder="C:\\path\\to\\website or https://github.com/org/repo" style="flex:1;min-width:180px;">
+                  <button class="btn-action" onclick="connectSourceFor('${esc(app.id)}',this)">Connect source</button>
+                </div>`;
+            }
+          } catch {
+            box.innerHTML = '<div style="color:#fb7185;">Could not check source status.</div>';
+          }
+        }
       } catch (err) {
         console.error('Error loading apps:', err);
+      }
+    }
+
+    async function doLogout() {
+      await fetch('/api/v1/auth/logout', { method: 'POST', credentials: 'same-origin', headers: { 'X-Requested-With': 'bugshield' } });
+      location.replace('/login');
+    }
+
+    async function connectSourceFor(appId, btn) {
+      const input = document.getElementById(`sp-${appId}`);
+      const value = (input && input.value || '').trim();
+      if (!value) { alert('Enter a local folder path or a Git repository URL.'); return; }
+      if (btn) { btn.disabled = true; btn.textContent = 'Cloning…'; }
+      try {
+        const isLocal = !/^https?:\/\//i.test(value) && !/^git@/i.test(value);
+        const res = await apiFetch(`/api/v1/apps/${appId}/source`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(isLocal ? { sourcePath: value } : { repoUrl: value })
+        });
+        const data = await res.json();
+        if (data.success) {
+          alert(`✓ Source connected. ${data.indexedFiles ?? 0} file(s) indexed from ${data.root}`);
+          loadApps();
+        } else {
+          alert('Could not connect source: ' + (data.error || 'unknown error'));
+          if (btn) { btn.disabled = false; btn.textContent = 'Connect source'; }
+        }
+      } catch (e) {
+        alert('Connect failed: ' + e.message);
+        if (btn) { btn.disabled = false; btn.textContent = 'Connect source'; }
       }
     }
 
@@ -735,14 +1178,25 @@
     async function openRegisterModal() {
       const name = prompt("Enter Website / Application Name:", "My New Website");
       if (!name) return;
+      const source = prompt(
+        "Source code for this website (needed so the AI can analyse and fix it):\n" +
+        "• local folder path, e.g. C:\\projects\\mysite\n" +
+        "• or a Git repository URL, e.g. https://github.com/org/repo\n\n" +
+        "Leave blank to connect it later from the dashboard.",
+        ""
+      );
+      if (source === null) return;
+      const value = (source || '').trim();
+      const isLocal = value && !/^https?:\/\//i.test(value) && !/^git@/i.test(value);
       try {
-        const res = await fetch('/api/v1/apps', {
+        const res = await apiFetch('/api/v1/apps', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             name,
             type: 'Web Application',
-            repoUrl: 'https://github.com/my-org/' + name.toLowerCase().replace(/\s+/g, '-'),
+            repoUrl: isLocal ? '' : (value || ('https://github.com/my-org/' + name.toLowerCase().replace(/\s+/g, '-'))),
+            sourcePath: isLocal ? value : '',
             permissions: { issueAccess: true, repoAccess: true, deploymentAccess: true }
           })
         });
@@ -750,6 +1204,8 @@
         if (data.success && data.app) {
           const app = data.app;
           copySnippet(app.id, app.sdkKey);
+          if (data.source && !data.source.ok) alert('Website registered, but source code was not connected:\n' + data.source.error);
+          else if (data.source && data.source.ok) alert(`✓ ${app.name} connected.\nSource code: ${data.source.root} (via ${data.source.via})`);
           loadApps();
         }
       } catch (err) {
@@ -757,56 +1213,747 @@
       }
     }
 
-    async function loadIssues() {
+    async function loadIssues(silent) {
       try {
         const res = await fetch('/api/v1/issues');
-        const issues = await res.json();
+        const data = await res.json();
+        // The API returns { success, issues }; older builds returned a bare
+        // array. Accept both so a shape change can never blank every view again.
+        const issues = Array.isArray(data) ? data : (data.issues || []);
+        ALL_ISSUES = issues;
         document.getElementById('m-issues').textContent = `${issues.length} Received`;
         const resolved = issues.filter(i => i.status === 'RESOLVED_AND_DEPLOYED');
         document.getElementById('m-patches').textContent = `${resolved.length} Deployed`;
-
-        const tbody = document.getElementById('issues-table-body');
-        if (issues.length === 0) {
-          tbody.innerHTML = '<tr><td colspan="6" style="color: var(--text-secondary); text-align:center;">No issues reported yet. Click "Report an Issue" on QuickShop or BiteDash.</td></tr>';
-          return;
-        }
-
-        tbody.innerHTML = issues.map(i => {
-          let statusBadgeClass = 'badge-amber';
-          let statusLabel = i.status;
-
-          if (i.status === 'RESOLVED_AND_DEPLOYED') {
-            statusBadgeClass = 'badge-success';
-          } else if (i.status === 'INVALID_REPORT') {
-            statusBadgeClass = 'badge-rose';
-            statusLabel = 'INVALID REPORT (NO BUG)';
-          }
-
-          let riskBadgeClass = i.riskLevel === 'HIGH' ? 'badge-amber' : (i.riskLevel === 'NONE' ? 'badge-indigo' : 'badge-success');
-
-          return `
-            <tr>
-              <td><strong>#${i.id}</strong></td>
-              <td>${i.applicationId}</td>
-              <td>${i.title}</td>
-              <td><span class="badge ${riskBadgeClass}">${i.riskLevel || 'NONE'}</span></td>
-              <td><span class="badge ${statusBadgeClass}">${statusLabel}</span></td>
-              <td>
-                <button class="btn-action" onclick="viewIssueCodeModal('${i.id}')" style="font-size:11px; padding:4px 8px;">🔍 View Code & Patch</button>
-              </td>
-            </tr>
-          `;
-        }).join('');
+        document.getElementById('history-error').textContent = '';
+        document.getElementById('bugs-error').textContent = '';
+        renderStats();
+        renderRecent();
+        const v = (location.hash || '#/dashboard');
+        if (v.startsWith('#/bugs') || v === '#/dashboard') renderBugsView();
+        if (v.startsWith('#/history')) renderHistory();
+        if (v.startsWith('#/analysis')) renderAnalysis();
+        if (v.startsWith('#/approvals')) renderApprovals();
+        if (v.startsWith('#/activity')) renderActivity();
+        loadPipelines().then(() => {
+          if (v.startsWith('#/testing')) renderTesting();
+          if (v.startsWith('#/deployments')) renderDeployments();
+        });
       } catch (err) {
-        console.error('Error loading issues:', err);
+        if (!silent) console.error('Error loading issues:', err);
+        const he = document.getElementById('history-error');
+        if (he && !ALL_ISSUES.length) he.innerHTML = `<div class="error-state">Unable to load history. <button class="btn-action" onclick="loadIssues()">Retry</button></div>`;
+        const be = document.getElementById('bugs-error');
+        if (be && !ALL_ISSUES.length) be.innerHTML = `<div class="error-state">Unable to load bugs. <button class="btn-action" onclick="loadIssues()">Retry</button></div>`;
       }
     }
 
+    /* ===== SPA router + shared real-data helpers (backend is source of truth) ===== */
+    let ALL_ISSUES = [], ALL_PIPELINES = [], ALL_APPS = [];
+    // List views render newest-first and cap at PAGE_CAP rows: with thousands
+    // of issues, full renders (plus per-row patch fetches) every 3s would
+    // choke the page. Filters still search the full set.
+    const PAGE_CAP = 100;
+    const capNote = (shown, total) => total > shown
+      ? `<div style="font-size:11px;color:var(--text-secondary);padding:8px 2px;">Showing latest ${shown} of ${total} — refine search or filters to narrow.</div>` : '';
+    const PATCH_CACHE = {};
+    let HIST_BACK = 'history';
+    const VIEWS = { dashboard: 'Dashboard', bugs: 'Bug Reports', bugdetail: 'Bug Details', analysis: 'AI Analysis', patches: 'Patches', testing: 'Testing', deployments: 'Deployments', approvals: 'Approvals', history: 'History', activity: 'Activity Logs', settings: 'Settings', evaluation: 'Evaluation', websites: 'My Websites' };
+
+    function go(view, param) {
+      if (view === 'bugdetail' && param) location.hash = '#/bug/' + param;
+      else location.hash = '#/' + view;
+    }
+    function toggleSidebar(force) {
+      const sb = document.getElementById('sidebar');
+      const show = typeof force === 'boolean' ? force : !sb.classList.contains('open');
+      sb.classList.toggle('open', show);
+      document.getElementById('side-backdrop').classList.toggle('show', show);
+    }
+    function route() {
+      const h = location.hash || '#/dashboard';
+      const m = h.match(/^#\/bug\/(.+)$/);
+      let v = (h.replace('#/', '').split('?')[0]) || 'dashboard';
+      if (m) { v = 'bugdetail'; openBugDetail(decodeURIComponent(m[1]), true); }
+      if (!VIEWS[v]) v = 'dashboard';
+
+      // A Viewer is confined to the websites list; any other route is not theirs.
+      if (isViewer() && !VIEWER_ONLY.has(v)) {
+        v = 'websites';
+        if (location.hash !== '#/websites') { location.hash = '#/websites'; return; }
+      }
+
+      document.querySelectorAll('.view').forEach(s => s.classList.remove('active'));
+      document.getElementById('view-' + v).classList.add('active');
+      document.querySelectorAll('#main-nav .nav-item').forEach(n => n.classList.toggle('active', n.dataset.view === v || (v === 'bugdetail' && (n.dataset.view === 'bugs' || (HIST_BACK === 'history' && n.dataset.view === 'history')))));
+      document.getElementById('crumb-parent').textContent = isViewer() ? 'My Websites' : 'BugShield';
+      document.getElementById('crumb-current').textContent = VIEWS[v];
+      if (window.innerWidth <= 860) toggleSidebar(false);
+      if (v === 'history') renderHistory();
+      if (v === 'activity') renderActivity();
+      if (v === 'bugs') renderBugsView();
+      if (v === 'analysis') renderAnalysis();
+      if (v === 'patches') renderPatches();
+      if (v === 'testing') renderTesting();
+      if (v === 'deployments') renderDeployments();
+      if (v === 'approvals') renderApprovals();
+      if (v === 'evaluation') renderEvaluation();
+      if (v === 'settings') renderSettings();
+      if (v === 'websites') renderWebsites();
+    }
+    window.addEventListener('hashchange', route);
+
+    function globalSearch(v) {
+      const q = document.getElementById('bugs-q');
+      if (q) { q.value = v; }
+      if ((location.hash || '') !== '#/bugs') location.hash = '#/bugs';
+      else renderBugsView();
+    }
+
+    const esc = s => escapeHtml(s == null ? '' : String(s));
+    const fmtT = iso => { try { return new Date(iso).toLocaleString(); } catch { return iso || '—'; } };
+    function sevOf(i) {
+      if ((i.riskScore || 0) >= 85) return 'Critical';
+      if (i.riskLevel === 'HIGH') return 'High';
+      if (i.riskLevel === 'LOW') return 'Low';
+      return 'None';
+    }
+    function sevBadge(s) {
+      const c = s === 'Critical' ? 'badge-rose' : s === 'High' ? 'badge-amber' : s === 'Low' ? 'badge-success' : 'badge-indigo';
+      return `<span class="badge ${c}">${s}</span>`;
+    }
+    function stageOf(i) {
+      switch (i.status) {
+        case 'RECEIVED': return 'Detected';
+        case 'IN_ANALYSIS': return 'Analyzing';
+        case 'AWAITING_ADMIN_APPROVAL': return 'Approval Required';
+        case 'APPROVED_BY_ADMIN': return 'Deploying';
+        case 'RESOLVED_AND_DEPLOYED': return 'Deployed';
+        case 'INVALID_REPORT': return 'Failed';
+        case 'REJECTED_BY_ADMIN': return 'Failed';
+        case 'PATCH_FAILED': return 'Failed';
+        case 'VALIDATION_FAILED': return 'Validation failed';
+        case 'ROLLED_BACK': return 'Rolled back';
+        case 'SOURCE_UNAVAILABLE': return 'No source code';
+        case 'LOCATION_NOT_FOUND': return 'Code not located';
+        case 'FAILED': return 'Failed';
+        default: return 'Detected';
+      }
+    }
+    function statusBadge(s) {
+      const bad = s === 'INVALID_REPORT' || s === 'FAILED' || s === 'PATCH_FAILED' || s === 'VALIDATION_FAILED';
+      const warn = s === 'AWAITING_ADMIN_APPROVAL';
+      const info = s === 'SOURCE_UNAVAILABLE' || s === 'LOCATION_NOT_FOUND' || s === 'REJECTED_BY_ADMIN';
+      const c = bad ? 'badge-rose' : warn ? 'badge-amber' : s === 'RESOLVED_AND_DEPLOYED' ? 'badge-success' : info ? 'badge-indigo' : 'badge-indigo';
+      const label = { INVALID_REPORT: 'INVALID REPORT (NO BUG)', SOURCE_UNAVAILABLE: 'NO SOURCE CODE', LOCATION_NOT_FOUND: 'CODE NOT LOCATED', PATCH_FAILED: 'PATCH FAILED' }[s] || s;
+      return `<span class="badge ${c}">${label}</span>`;
+    }
+    function overallOf(i) {
+      if (i.status === 'RESOLVED_AND_DEPLOYED') return 'Successful';
+      if (i.status === 'INVALID_REPORT' || i.status === 'FAILED' || i.status === 'REJECTED_BY_ADMIN') return 'Failed';
+      return 'In Progress';
+    }
+    function pipeOf(issueId) { return ALL_PIPELINES.find(p => p.issueId === issueId) || null; }
+    async function getPatchCached(issueId) {
+      if (PATCH_CACHE[issueId] !== undefined) return PATCH_CACHE[issueId];
+      try { const r = await fetch(`/api/v1/issues/${issueId}/patch`); PATCH_CACHE[issueId] = await r.json(); }
+      catch { PATCH_CACHE[issueId] = null; }
+      return PATCH_CACHE[issueId];
+    }
+    // The API stores generated code inside patchResult; normalise both shapes so the UI always shows real data.
+    function patchInfo(p) {
+      if (!p) return null;
+      const r = p.patchResult || {};
+      return {
+        id: p.id, status: p.status, createdAt: p.createdAt,
+        targetFileRel: p.targetFileRel || r.targetFileRel || '',
+        originalCode: p.originalCode || r.originalCode || '',
+        updatedCode: p.updatedCode || r.updatedCode || '',
+        diff: p.diff || r.diff || '',
+        description: p.description || r.description || '',
+        syntaxValid: r.syntaxValid
+      };
+    }
+    function stepsFor(issue) {
+      const steps = ['Detected', 'AI Analysis', 'Risk Classification', 'Patch Generation', 'Testing', 'Approval', 'Canary', 'Production'];
+      const st = steps.map(() => 'pending');
+      const done = n => { for (let k = 0; k < n; k++) st[k] = 'done'; };
+      switch (issue.status) {
+        case 'RECEIVED': st[0] = 'done'; break;
+        case 'IN_ANALYSIS': done(1); st[1] = 'running'; break;
+        case 'AWAITING_ADMIN_APPROVAL': done(4); st[5] = 'attn'; break;
+        case 'APPROVED_BY_ADMIN': done(6); st[6] = 'running'; break;
+        case 'RESOLVED_AND_DEPLOYED': done(8); break;
+        case 'REJECTED_BY_ADMIN': done(4); st[5] = 'failed'; break;
+        case 'SOURCE_UNAVAILABLE': st[0] = 'failed'; break;
+        case 'LOCATION_NOT_FOUND': st[0] = 'failed'; st[1] = 'failed'; break;
+        case 'PATCH_FAILED': done(3); st[3] = 'failed'; break;
+        case 'VALIDATION_FAILED': done(4); st[4] = 'failed'; break;
+        case 'ROLLED_BACK': done(6); st[6] = 'failed'; st[7] = 'failed'; break;
+        case 'INVALID_REPORT': case 'FAILED': st[1] = 'failed'; break;
+      }
+      return steps.map((label, k) => `<div class="step ${st[k]}">${label}</div>`).join('');
+    }
+
+    /* ===== Agent monitoring (driven by live WS events + issue states) ===== */
+    function setAgent(key, label, task) {
+      const pill = { Idle: '', Processing: 'warn', Generating: 'warn', Running: 'warn', Deploying: 'warn', Completed: 'ok', Passed: 'ok', Deployed: 'ok', Failed: 'err', Error: 'err', 'Approval Required': 'warn', Waiting: '' }[label] || '';
+      const st = document.getElementById('ag-st-' + key), tk = document.getElementById('ag-task-' + key);
+      if (st) { st.textContent = label; st.className = 'mini-pill ' + pill; }
+      if (tk && task) tk.textContent = task;
+    }
+    const AG_STEP_AGENT = { DETECTION: 'det', RISK_ASSESSMENT: 'risk', PATCH_GENERATION: 'patch', CICD_PIPELINE: 'pipe', CANARY_DEPLOYMENT: 'can' };
+    const AG_RUN_LABEL = { det: 'Processing', risk: 'Processing', patch: 'Generating', pipe: 'Running', can: 'Deploying' };
+
+    /* ===== Dashboard stats from REAL data ===== */
+    function renderStats() {
+      const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+      set('m-total', ALL_ISSUES.length);
+      set('m-critical', ALL_ISSUES.filter(i => sevOf(i) === 'Critical').length);
+      set('m-high', ALL_ISSUES.filter(i => i.riskLevel === 'HIGH').length);
+      set('m-fixed', ALL_ISSUES.filter(i => i.status === 'RESOLVED_AND_DEPLOYED').length);
+      const pend = ALL_ISSUES.filter(i => i.status === 'AWAITING_ADMIN_APPROVAL').length;
+      set('m-pending', pend);
+      set('m-deployed', ALL_ISSUES.filter(i => i.status === 'RESOLVED_AND_DEPLOYED').length);
+      set('m-failed', ALL_ISSUES.filter(i => i.status === 'FAILED' || i.status === 'INVALID_REPORT' || i.status === 'REJECTED_BY_ADMIN').length);
+      const badge = document.getElementById('nav-approval-count');
+      if (badge) { badge.style.display = pend ? 'inline-block' : 'none'; badge.textContent = pend; }
+    }
+    function renderRecent() {
+      const tb = document.getElementById('recent-table-body');
+      if (!tb) return;
+      if (!ALL_ISSUES.length) { tb.innerHTML = '<tr><td colspan="6"><div class="empty-state"><div class="big">🐞</div>No bugs reported yet. Click “Report an Issue” on a connected website.</div></td></tr>'; return; }
+      tb.innerHTML = ALL_ISSUES.slice(0, 5).map(i => `
+        <tr class="clickable" onclick="go('bugdetail','${i.id}')">
+          <td><strong>#${esc(i.id)}</strong></td><td>${esc(i.title)}</td><td>${sevBadge(sevOf(i))}</td>
+          <td>${statusBadge(i.status)}</td><td style="white-space:nowrap;">${fmtT(i.reportedAt)}</td><td>${stageOf(i)}</td>
+        </tr>`).join('');
+    }
+
+    /* ===== Bug Reports view ===== */
+    function filteredBugs() {
+      const q = (document.getElementById('bugs-q').value || '').toLowerCase();
+      const sev = document.getElementById('bugs-sev').value, st = document.getElementById('bugs-status').value, sort = document.getElementById('bugs-sort').value;
+      let rows = ALL_ISSUES.filter(i => (!q || i.id.toLowerCase().includes(q) || (i.title || '').toLowerCase().includes(q) || (i.description || '').toLowerCase().includes(q)) && (!sev || sevOf(i) === sev) && (!st || i.status === st));
+      const sevRank = s => ({ Critical: 4, High: 3, Low: 2, None: 1 })[s] || 0;
+      rows.sort((a, b) => sort === 'old' ? new Date(a.reportedAt) - new Date(b.reportedAt) : sort === 'sev' ? sevRank(sevOf(b)) - sevRank(sevOf(a)) : sort === 'upd' ? new Date(b.resolvedAt || b.reportedAt) - new Date(a.resolvedAt || a.reportedAt) : new Date(b.reportedAt) - new Date(a.reportedAt));
+      return rows;
+    }
+    async function renderBugsView() {
+      const tb = document.getElementById('issues-table-body');
+      if (!tb) return;
+      const all = filteredBugs();
+      if (!all.length) { tb.innerHTML = '<tr><td colspan="7"><div class="empty-state"><div class="big">🔍</div>No bugs match your search or filters.</div></td></tr>'; return; }
+      const rows = all.slice(0, PAGE_CAP);
+      const patches = await Promise.all(rows.map(r => getPatchCached(r.id)));
+      const noteRow = all.length > rows.length ? `<tr><td colspan="7" style="font-size:11px;color:var(--text-secondary);">Showing latest ${rows.length} of ${all.length} — refine search or filters to narrow.</td></tr>` : '';
+      tb.innerHTML = noteRow + rows.map((i, k) => {
+        const p = pipeOf(i.id), px = patchInfo(patches[k]);
+        const dep = i.status === 'RESOLVED_AND_DEPLOYED' ? 'Deployed' : p ? 'In pipeline' : 'Not Deployed';
+        return `<tr class="clickable" onclick="go('bugdetail','${i.id}')">
+          <td><strong>#${esc(i.id)}</strong></td><td>${esc(i.title)}<div style="font-size:11px;color:var(--text-secondary);">${esc((i.description || '').slice(0, 80))}</div></td>
+          <td>${sevBadge(sevOf(i))}</td><td>${statusBadge(i.status)}</td><td style="white-space:nowrap;">${fmtT(i.reportedAt)}</td>
+          <td style="font-family:'Fira Code',monospace;font-size:11px;">${esc(px && px.targetFileRel ? px.targetFileRel : '—')}</td><td>${dep}</td></tr>`;
+      }).join('');
+    }
+
+    /* ===== Bug detail view (real issue + patch + pipeline data) ===== */
+    async function openBugDetail(issueId, fromRoute) {
+      const box = document.getElementById('bugdetail-content');
+      const back = document.getElementById('bugdetail-back');
+      const issue = ALL_ISSUES.find(i => i.id === issueId);
+      if (!issue) { if (box) box.innerHTML = '<div class="card"><div class="error-state">Bug not found. It may have been removed.<br><br><button class="btn-action" onclick="go(\'bugs\')">← Back to Bug Reports</button></div></div>'; return; }
+      if (back) back.setAttribute('onclick', `go('${HIST_BACK === 'history' ? 'history' : 'bugs'}')`);
+      if (!fromRoute) { HIST_BACK = (location.hash || '').startsWith('#/history') || document.getElementById('view-history').classList.contains('active') ? 'history' : 'bugs'; location.hash = '#/bug/' + issueId; return; }
+      box.innerHTML = '<div class="card"><div class="skel"></div><div class="skel"></div><div class="skel"></div></div>';
+      const [patchRaw, pipe] = await Promise.all([getPatchCached(issueId), (async () => { try { const r = await fetch(`/api/v1/pipelines/${issueId}`); return await r.json(); } catch { return pipeOf(issueId); } })()]);
+      const patch = patchInfo(patchRaw);
+      const logs = (pipe && pipe.logs) || [];
+      const riskLines = logs.filter(l => l.includes('AGENT-RISK-02'));
+      const scoreLines = logs.filter(l => /^\[Risk Classification & Governance Agent\]\s+\+\d/.test(l));
+      const breakdownBlock = scoreLines.length ? `<div class="diff-box" style="max-height:200px;border:1px solid var(--card-border);border-radius:10px;margin-top:8px;">${esc(scoreLines.join('\n') + '\n' + (logs.filter(l => l.includes('Calculated Risk Score'))[0] || ''))}</div>` : '';
+      const testLines = logs.filter(l => /STAGE [123]|PASS|FAIL|Jenkins|Docker/i.test(l));
+      const canLines = logs.filter(l => l.includes('AGENT-CANARY-05'));
+      box.innerHTML = `
+      <div class="card" style="margin-bottom:16px;">
+        <div class="section-header"><h2 class="section-title">#${esc(issue.id)} — ${esc(issue.title)}</h2><div>${sevBadge(sevOf(issue))} ${statusBadge(issue.status)}</div></div>
+        <div class="stepper">${stepsFor(issue)}</div>
+        <div class="detail-grid" style="margin-top:14px;">
+          <div><h4 style="margin:0 0 8px 0;">Bug Information</h4><dl class="kv">
+            <dt>Bug ID</dt><dd>${esc(issue.id)}</dd><dt>Title</dt><dd>${esc(issue.title)}</dd>
+            <dt>Description</dt><dd>${esc(issue.description || '—')}</dd><dt>Application</dt><dd>${esc(issue.applicationId)}</dd>
+            <dt>Page</dt><dd>${esc(issue.pageUrl || '/')}</dd><dt>Created</dt><dd>${fmtT(issue.reportedAt)}</dd>
+            <dt>Resolved</dt><dd>${issue.resolvedAt ? fmtT(issue.resolvedAt) : '—'}</dd>
+            <dt>Steps</dt><dd>${esc(issue.stepsToReproduce || '—')}</dd></dl></div>
+          <div><h4 style="margin:0 0 8px 0;">AI Analysis</h4><dl class="kv">
+            <dt>Status</dt><dd>${issue.rootCause ? 'Completed' : 'Pending'}</dd><dt>Root cause</dt><dd>${esc(issue.rootCause || '—')}</dd>
+            <dt>Risk level</dt><dd>${esc(issue.riskLevel || '—')} ${issue.riskScore ? '(' + issue.riskScore + '/100)' : ''}</dd>
+            <dt>Evidence</dt><dd>${riskLines.length ? esc(riskLines.slice(0, 4).join(' | ').slice(0, 400)) : '—'}</dd></dl>
+            ${breakdownBlock}
+            <h4 style="margin:14px 0 8px 0;">Patch</h4><dl class="kv">
+            <dt>Status</dt><dd>${esc(patch ? patch.status : 'Not generated')}</dd>
+            <dt>Changed file</dt><dd>${esc(patch && patch.targetFileRel ? patch.targetFileRel : '—')}</dd>
+            <dt>Summary</dt><dd>${esc(patch ? (patch.description || '—') : '—')}</dd></dl></div>
+        </div>
+        ${patch && patch.diff ? `<h4>Code Diff</h4><div class="diff-box" style="max-height:300px;border:1px solid var(--card-border);border-radius:10px;">${renderDiffLines(patch.diff)}</div>` : '<div class="empty-state" style="margin-top:14px;">No code diff available for this report.</div>'}
+      </div>
+      <div class="grid-2">
+        <div class="card"><h4 style="margin:0 0 8px 0;">Testing</h4>${testLines.length ? `<div class="diff-box" style="max-height:220px;">${esc(testLines.join('\n'))}</div>` : '<div class="empty-state">No test results recorded yet.</div>'}</div>
+        <div class="card"><h4 style="margin:0 0 8px 0;">Deployment</h4><dl class="kv">
+          <dt>Pipeline</dt><dd>${esc(pipe ? pipe.id : '—')}</dd><dt>Pipeline status</dt><dd>${esc(pipe ? pipe.status : '—')}</dd>
+          <dt>Current step</dt><dd>${esc(pipe ? pipe.currentStep : stageOf(issue))}</dd>
+          <dt>Canary</dt><dd>${canLines.some(l => /PASSED/.test(l)) ? 'Passed' : canLines.length ? 'Ran (see logs)' : '—'}</dd></dl>
+          ${canLines.length ? `<div class="diff-box" style="max-height:220px;margin-top:10px;">${esc(canLines.join('\n'))}</div>` : ''}</div>
+      </div>`;
+    }
+
+    /* ===== AI Analysis / Patches / Testing / Deployments views ===== */
+    function renderAnalysis() {
+      const el = document.getElementById('analysis-list');
+      if (!ALL_ISSUES.length) { el.innerHTML = '<div class="empty-state"><div class="big">🧠</div>No AI analysis available yet. Analysis appears here after a bug is reported.</div>'; return; }
+      const sorted = [...ALL_ISSUES].sort((a, b) => new Date(b.reportedAt) - new Date(a.reportedAt));
+      const rows = sorted.slice(0, PAGE_CAP);
+      el.innerHTML = capNote(rows.length, sorted.length) + rows.map(i => `
+        <div class="app-card"><div class="app-header"><div><div class="app-title">#${esc(i.id)} — ${esc(i.title)}</div>
+        <div style="font-size:12px;color:var(--text-secondary);">${fmtT(i.reportedAt)} · ${esc(i.applicationId)}</div></div>
+        <div>${sevBadge(sevOf(i))} ${statusBadge(i.status)}</div></div>
+        <dl class="kv"><dt>Root cause</dt><dd>${esc(i.rootCause || 'Analysis pending…')}</dd><dt>Risk</dt><dd>${esc(i.riskLevel || '—')}${i.riskScore ? ` (${i.riskScore}/100)` : ''}</dd></dl>
+        <div style="margin-top:8px;"><button class="btn-action" onclick="go('bugdetail','${i.id}')">Open details</button></div></div>`).join('');
+    }
+    async function renderPatches() {
+      const el = document.getElementById('patches-list');
+      const withPatch = [];
+      // Capped: each row costs a patch fetch; full-list sweeps stall the page.
+      for (const i of ALL_ISSUES.slice(0, PAGE_CAP)) { const p = patchInfo(await getPatchCached(i.id)); if (p) withPatch.push([i, p]); }
+      if (!withPatch.length) { el.innerHTML = '<div class="empty-state"><div class="big">🩹</div>No patches generated yet. Patches appear here with real BEFORE/AFTER diffs.</div>'; return; }
+      el.innerHTML = capNote(PAGE_CAP, ALL_ISSUES.length) + withPatch.map(([i, p]) => `
+        <div class="app-card"><div class="app-header"><div><div class="app-title">#${esc(i.id)} — ${esc(i.title)}</div>
+        <div style="font-size:12px;color:var(--text-secondary);">${esc(p.targetFileRel || '')} · ${esc(p.status || '')} · ${fmtT(p.createdAt || i.reportedAt)} · syntax ${p.syntaxValid ? 'valid' : 'invalid'}</div></div>
+        <button class="btn-action" onclick="viewIssueCodeModal('${i.id}')">🔍 View Code & Patch</button></div>
+        <div style="font-size:13px;">${esc(p.description || '—')}</div>
+        ${p.diff ? `<div class="diff-box" style="max-height:180px;border:1px solid var(--card-border);border-radius:10px;margin-top:8px;">${renderDiffLines(p.diff)}</div>` : ''}</div>`).join('');
+    }
+    function parseTests(pipe) {
+      const logs = (pipe && pipe.logs) || [];
+      const sa = logs.find(l => /STAGE 1 (PASSED|WARNING)/.test(l));
+      const suite = logs.find(l => /specs passing/.test(l));
+      const jb = logs.find(l => /Jenkins Pipeline Job/.test(l));
+      return { sa: sa ? (/PASSED/.test(sa) ? 'Passed' : 'Warning') : null, suite: suite ? (suite.match(/(\d+\/\d+ specs passing)/) || [])[1] || 'Passed' : null, build: jb ? (jb.match(/#(\d+)/) || [])[1] : null, logs };
+    }
+    function renderTesting() {
+      const el = document.getElementById('testing-list');
+      const rows = (ALL_PIPELINES.length ? ALL_PIPELINES : ALL_ISSUES.map(i => ({ issueId: i.id, status: 'PENDING', logs: [] }))).slice(0, PAGE_CAP);
+      if (!ALL_ISSUES.length) { el.innerHTML = '<div class="empty-state"><div class="big">🧪</div>No test results yet. Validation output appears here after patch generation.</div>'; return; }
+      el.innerHTML = capNote(rows.length, ALL_PIPELINES.length || ALL_ISSUES.length) + rows.map(p => {
+        const t = parseTests(p);
+        const pill = v => v == null ? '<span class="mini-pill">— Pending</span>' : /Pass|14\/14/.test(v) ? `<span class="mini-pill ok">✓ ${esc(v)}</span>` : `<span class="mini-pill warn">${esc(v)}</span>`;
+        return `<div class="app-card"><div class="app-header"><div><div class="app-title">#${esc(p.issueId)}</div>
+        <div style="font-size:12px;color:var(--text-secondary);">Pipeline ${esc(p.id || '—')} · ${esc(p.status || 'PENDING')}</div></div>
+        <button class="btn-action" onclick="go('bugdetail','${p.issueId}')">Details</button></div>
+        <div class="pill-row"><span class="mini-pill">Static analysis: ${t.sa || 'pending'}</span><span class="mini-pill">Suite: ${t.suite || 'pending'}</span><span class="mini-pill">Build: ${t.build ? '#' + t.build : 'pending'}</span></div>
+        <div style="margin-top:6px;">${pill(t.sa)} ${pill(t.suite)}</div></div>`;
+      }).join('');
+    }
+    function renderDeployments() {
+      const el = document.getElementById('deployments-list');
+      if (!ALL_PIPELINES.length) { el.innerHTML = '<div class="empty-state"><div class="big">🚀</div>No deployments yet. Canary → production progress appears here.</div>'; return; }
+      el.innerHTML = capNote(PAGE_CAP, ALL_PIPELINES.length) + [...ALL_PIPELINES].sort((a, b) => new Date(b.startedAt) - new Date(a.startedAt)).slice(0, PAGE_CAP).map(p => {
+        const can = (p.logs || []).filter(l => l.includes('AGENT-CANARY-05'));
+        const ok = p.status === 'SUCCESS';
+        return `<div class="app-card"><div class="app-header"><div><div class="app-title">${esc(p.id)} → #${esc(p.issueId)}</div>
+        <div style="font-size:12px;color:var(--text-secondary);">${fmtT(p.startedAt)} → ${p.completedAt ? fmtT(p.completedAt) : 'running…'} · ${esc(p.currentStep || '')}</div></div>
+        <span class="badge ${ok ? 'badge-success' : p.status.includes('PAUSE') ? 'badge-amber' : p.status === 'FAILED' ? 'badge-rose' : 'badge-indigo'}">${esc(p.status)}</span></div>
+        <div class="stepper">${['Testing', 'Canary', 'Monitoring', 'Production'].map((s, k) => { const cls = ok ? 'done' : p.status === 'FAILED' && k >= 1 ? 'failed' : k === 0 ? 'done' : ''; return `<div class="step ${cls}">${s}</div>`; }).join('')}</div>
+        ${can.length ? `<div class="diff-box" style="max-height:150px;border:1px solid var(--card-border);border-radius:10px;">${esc(can.slice(-8).join('\n'))}</div>` : ''}</div>`;
+      }).join('');
+    }
+
+    /* ===== Approvals (real approve + reject endpoints) ===== */
+    function renderApprovals() {
+      const el = document.getElementById('approvals-list');
+      const rows = ALL_ISSUES.filter(i => i.status === 'AWAITING_ADMIN_APPROVAL');
+      if (!rows.length) { el.innerHTML = '<div class="empty-state"><div class="big">✅</div>No high-risk changes awaiting review. New approval requests appear here with full context.</div>'; return; }
+      el.innerHTML = '';
+      rows.forEach(async i => {
+        const p = patchInfo(await getPatchCached(i.id));
+        const d = document.createElement('div'); d.className = 'app-card';
+        d.innerHTML = `<div class="app-header"><div><div class="app-title">#${esc(i.id)} — ${esc(i.title)}</div>
+          <div style="font-size:12px;color:var(--text-secondary);">Risk ${esc(i.riskLevel)} (${i.riskScore}/100) · ${esc(i.rootCause || '')}</div></div>${sevBadge(sevOf(i))}</div>
+          <div style="font-size:13px;">${esc(p ? (p.description || '') : 'Patch loading…')}</div>
+          ${p && p.diff ? `<div class="diff-box" style="max-height:160px;border:1px solid var(--card-border);border-radius:10px;margin-top:8px;">${renderDiffLines(p.diff)}</div>` : ''}
+          <div class="toolbar" style="margin-top:10px;margin-bottom:0;">
+            <button class="btn-success" onclick="decideApproval('${i.id}',true,this)">Approve Deployment</button>
+            <button class="btn-danger" onclick="decideApproval('${i.id}',false,this)">Reject</button>
+            <button class="btn-action" onclick="go('bugdetail','${i.id}')">Full details</button>
+          </div>`;
+        el.appendChild(d);
+      });
+    }
+    async function decideApproval(issueId, approve, btn) {
+      if (!confirm(approve ? `Approve deployment for #${issueId}?` : `Reject patch for #${issueId}? The pipeline will be closed.`)) return;
+      if (btn) btn.disabled = true;
+      try {
+        const res = await apiFetch(`/api/v1/issues/${issueId}/${approve ? 'approve' : 'reject'}`, { method: 'POST' });
+        const data = await res.json();
+        if (data.success) { alert(approve ? '✅ Patch Authorized! Continuing CI/CD and canary deployment…' : 'Patch rejected and pipeline closed.'); loadIssues(); }
+        else alert('Action failed: ' + (data.message || 'unknown error'));
+      } catch (e) { alert('Action error: ' + e.message); }
+      if (btn) btn.disabled = false;
+    }
+
+    /* ===== History (REAL persisted data) ===== */
+    function histResult(i) { return overallOf(i); }
+    function filteredHistory() {
+      const q = (document.getElementById('hist-q').value || '').toLowerCase();
+      const sev = document.getElementById('hist-sev').value, st = document.getElementById('hist-status').value, dep = document.getElementById('hist-dep').value, sort = document.getElementById('hist-sort').value;
+      let rows = ALL_ISSUES.filter(i => {
+        const p = pipeOf(i.id);
+        const depState = i.status === 'RESOLVED_AND_DEPLOYED' ? 'Deployed' : (i.status === 'FAILED' ? 'Failed' : (p ? 'Failed' : 'Not Deployed'));
+        const depOk = !dep || (dep === 'Not Deployed' ? (depState === 'Not Deployed') : depState === dep);
+        const qOk = !q || i.id.toLowerCase().includes(q) || (i.title || '').toLowerCase().includes(q) || (i.description || '').toLowerCase().includes(q) || (p && p.id.toLowerCase().includes(q));
+        return qOk && (!sev || sevOf(i) === sev) && (!st || histResult(i) === st) && depOk;
+      });
+      const sevRank = s => ({ Critical: 4, High: 3, Low: 2, None: 1 })[s] || 0;
+      rows.sort((a, b) => sort === 'old' ? new Date(a.reportedAt) - new Date(b.reportedAt) : sort === 'sev' ? sevRank(sevOf(b)) - sevRank(sevOf(a)) : sort === 'upd' ? new Date(b.resolvedAt || b.reportedAt) - new Date(a.resolvedAt || a.reportedAt) : new Date(b.reportedAt) - new Date(a.reportedAt));
+      return rows;
+    }
+    function renderHistory() {
+      const el = document.getElementById('history-list');
+      if (!el) return;
+      if (!ALL_ISSUES.length && !document.getElementById('history-error').textContent) {
+        el.innerHTML = '<div class="empty-state"><div class="big">📜</div><strong>No bug history available yet.</strong><br>Completed bug workflows will appear here automatically once end-users report issues and the agents resolve them. History is stored in the database and survives refresh.</div>'; return;
+      }
+      const allHist = filteredHistory();
+      if (!allHist.length) { el.innerHTML = '<div class="empty-state"><div class="big">🔍</div>No history records match your search or filters.</div>'; return; }
+      const rows = allHist.slice(0, PAGE_CAP);
+      el.innerHTML = capNote(rows.length, allHist.length) + rows.map(i => {
+        const p = pipeOf(i.id), r = histResult(i);
+        const rc = r === 'Successful' ? 'ok' : r === 'Failed' ? 'err' : 'warn';
+        const pill = t => `<span class="mini-pill ${t === 'Completed' || t === 'Generated' || t === 'Passed' || t === 'Successful' || t === 'Deployed' ? 'ok' : t === 'Pending' || t === 'In Progress' || t === 'Not Deployed' ? '' : 'warn'}">${t}</span>`;
+        return `<div class="card hist-card" onclick="HIST_BACK='history';go('bugdetail','${i.id}')">
+          <div class="app-header"><div><div class="app-title">${esc(i.id)} — ${esc(i.title)}</div>
+          <div style="font-size:12px;color:var(--text-secondary);">${fmtT(i.reportedAt)}${i.resolvedAt ? ' → ' + fmtT(i.resolvedAt) : ''} · ${esc(i.applicationId)}</div></div>
+          <div>${sevBadge(sevOf(i))} <span class="mini-pill ${rc}">${r}</span></div></div>
+          <div class="pill-row"><span style="font-size:11px;color:var(--text-secondary);">AI Analysis</span>${pill(i.rootCause ? 'Completed' : 'Pending')}
+          <span style="font-size:11px;color:var(--text-secondary);">Patch</span>${pill(p ? 'Generated' : 'Pending')}
+          <span style="font-size:11px;color:var(--text-secondary);">Testing</span>${pill(p && /STAGE 3 PASSED/.test((p.logs || []).join('')) ? 'Passed' : p ? 'In Progress' : 'Pending')}
+          <span style="font-size:11px;color:var(--text-secondary);">Deployment</span>${pill(i.status === 'RESOLVED_AND_DEPLOYED' ? 'Deployed' : p ? 'In Progress' : 'Not Deployed')}</div>
+        </div>`;
+      }).join('');
+    }
+
+    /* ===== Evaluation: real measured results from benchmark/results.json ===== */
+    let EVAL_DATA = null;
+    async function renderEvaluation() {
+      const el = document.getElementById('evaluation-list');
+      const rm = document.getElementById('risk-model');
+      if (!el) return;
+      try {
+        const r = await fetch('/api/v1/evaluation');
+        const d = await r.json();
+        if (!d.success) throw new Error(d.error);
+        EVAL_DATA = d.results;
+        const names = { 'S1-keyword-only': 'S1 — Keyword-only baseline', 'S2-static-only': 'S2 — Static-analysis-only baseline', 'S3-bugshield': 'S3 — BugShield full pipeline' };
+        const rows = Object.entries(d.results.systems).map(([k, m]) => `<tr>
+          <td><strong>${esc(names[k] || k)}</strong></td>
+          <td>${m.fileIdentificationAccuracyPct}%</td><td>${m.defectDetectionRecallPct}%</td><td>${m.bugTypeAccuracyPct}%</td>
+          <td>${m.falsePositiveRatePct}%</td>
+          <td>${m.patchSyntaxValidityPct === null ? '<span style="color:var(--text-secondary)">no validation stage</span>' : m.patchSyntaxValidityPct + '%'}</td>
+          <td>${m.escalatedByGovernance}/${m.positives}</td><td>${m.meanDecisionTimeMs} ms</td></tr>`).join('');
+        const detail = (d.results.detail['S3-bugshield'] || []).map(x => `<tr>
+          <td><code>${esc(x.case)}</code></td><td>${esc(x.expectFile || '— none —')}</td><td>${esc(x.detectedType || x.stopReason || '—')}</td>
+          <td>${x.riskScore ?? '—'}</td><td>${esc(x.riskLevel || '—')}</td>
+          <td>${x.patchGenerated ? (x.patchSyntaxValid ? '<span class="mini-pill ok">✓ valid</span>' : '<span class="mini-pill err">✕ invalid</span>') : '<span class="mini-pill">— none</span>'}</td></tr>`).join('');
+        el.innerHTML = `
+          <div class="pill-row" style="margin-bottom:12px;">
+            <span class="mini-pill">Corpus: ${d.results.corpusSize} labelled cases</span>
+            <span class="mini-pill">Measured: ${esc(new Date(d.results.generatedAt).toLocaleString())}</span>
+            <span class="mini-pill">Risk escalation threshold: ${d.results.riskHighThreshold}</span>
+          </div>
+          <div class="table-wrap"><table class="data-table"><thead><tr>
+            <th>System</th><th>File ID acc.</th><th>Detection recall</th><th>Bug-type acc.</th><th>False-positive rate</th><th>Patch syntax validity</th><th>Escalated</th><th>Decision time</th>
+          </tr></thead><tbody>${rows}</tbody></table></div>
+          <h4 style="margin:18px 0 6px 0;">Per-case outcome — BugShield pipeline</h4>
+          <div class="table-wrap"><table class="data-table"><thead><tr>
+            <th>Case</th><th>Ground-truth file</th><th>Detected type / stop reason</th><th>Risk score</th><th>Level</th><th>Patch</th>
+          </tr></thead><tbody>${detail}</tbody></table></div>
+          <p style="font-size:11.5px;color:var(--text-secondary);margin-top:12px;">
+            Reproduce with <code>node benchmark/run-eval.mjs</code>. Corpus is versioned under <code>benchmark/cases/</code>; no corpus file is modified by the harness.
+          </p>`;
+      } catch (err) {
+        el.innerHTML = `<div class="error-state">Unable to load evaluation results.<br><span style="font-size:12px;">${esc(err.message)}</span><br><br><button class="btn-action" onclick="renderEvaluation()">Retry</button></div>`;
+      }
+      try {
+        const r = await fetch('/api/v1/risk-model');
+        const d = await r.json();
+        const m = d.model;
+        rm.innerHTML = `
+          <dl class="kv"><dt>Base score</dt><dd>${m.base}</dd>
+          <dt>Escalation threshold</dt><dd>score ≥ ${m.thresholds.high} requires human approval; score &lt; ${m.thresholds.low} is low risk</dd></dl>
+          <div class="table-wrap" style="margin-top:10px;"><table class="data-table"><thead><tr><th>Factor</th><th>Weight</th><th>Rationale</th></tr></thead><tbody>
+          ${m.factors.map(f => `<tr><td><strong>${esc(f.factor)}</strong></td><td>${esc(f.weight)}</td><td style="color:var(--text-secondary);">${esc(f.rationale)}</td></tr>`).join('')}
+          </tbody></table></div>
+          <p style="font-size:11.5px;color:var(--text-secondary);margin-top:10px;">Single source of truth: <code>platform/services/riskConfig.js</code>. Each scored issue also shows its own point-by-point breakdown in Bug details.</p>`;
+      } catch {
+        rm.innerHTML = '<div class="error-state">Unable to load risk model.</div>';
+      }
+    }
+
+    /* ===== Settings: password, members, projects ===== */
+    const ROLE_LABEL = { owner: 'Owner', admin: 'Admin', developer: 'Developer', reviewer: 'Reviewer', viewer: 'Viewer' };
+    const can = cap => !!(window.SESSION && (window.SESSION.capabilities || []).includes(cap));
+
+    function setMsg(elId, text, ok) {
+      const el = document.getElementById(elId);
+      if (!el) return;
+      el.innerHTML = text ? `<span style="color:${ok ? '#34d399' : '#fda4af'};">${esc(text)}</span>` : '';
+    }
+
+    async function changePassword() {
+      const cur = document.getElementById('pw-current').value;
+      const next = document.getElementById('pw-new').value;
+      const confirm_ = document.getElementById('pw-confirm').value;
+      setMsg('pw-msg', '');
+      if (!cur || !next) return setMsg('pw-msg', 'Enter your current and new password.', false);
+      if (next.length < 12) return setMsg('pw-msg', 'New password must be at least 12 characters.', false);
+      if (next !== confirm_) return setMsg('pw-msg', 'New password and confirmation do not match.', false);
+      const btn = document.getElementById('pw-submit');
+      btn.disabled = true;
+      try {
+        const res = await apiFetch('/api/v1/auth/set-password', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ currentPassword: cur, newPassword: next })
+        });
+        const d = await res.json();
+        if (d.success) {
+          setMsg('pw-msg', 'Password updated. Other sessions were signed out.', true);
+          ['pw-current', 'pw-new', 'pw-confirm'].forEach(id => document.getElementById(id).value = '');
+        } else setMsg('pw-msg', d.error || 'Could not update password.', false);
+      } catch (e) { setMsg('pw-msg', 'Request failed: ' + e.message, false); }
+      btn.disabled = false;
+    }
+
+    async function loadMembers() {
+      const body = document.getElementById('members-body');
+      if (!body) return;
+      const allowed = can('member:manage');
+      document.getElementById('members-perm').style.display = allowed ? 'block' : 'none';
+      try {
+        const res = await apiFetch('/api/v1/members');
+        const d = await res.json();
+        if (!d.success) throw new Error(d.error || 'could not load members');
+        if (!d.members.length) {
+          body.innerHTML = '<tr><td colspan="5"><div class="empty-state"><div class="big">👥</div>No members found.</div></td></tr>';
+          return;
+        }
+        const me = window.SESSION && window.SESSION.user.id;
+        body.innerHTML = d.members.map(m => `<tr>
+          <td><strong>${esc(m.display_name || '—')}</strong></td>
+          <td>${esc(m.email)}</td>
+          <td><span class="mini-pill ${m.role === 'owner' ? 'ok' : ''}">${esc(ROLE_LABEL[m.role] || m.role)}</span></td>
+          <td>${m.disabled ? '<span class="mini-pill err">disabled</span>' : '<span class="mini-pill ok">active</span>'}</td>
+          <td>${allowed && m.id !== me ? `<button class="btn-danger" onclick="removeMember('${esc(m.id)}','${esc(m.email)}')">Remove</button>` : '<span style="color:var(--text-secondary);font-size:12px;">—</span>'}</td>
+        </tr>`).join('');
+      } catch (e) {
+        body.innerHTML = `<tr><td colspan="5"><div class="error-state">${esc(e.message)}<br><button class="btn-action" onclick="loadMembers()">Retry</button></div></td></tr>`;
+      }
+    }
+
+    async function inviteMember() {
+      const email = document.getElementById('inv-email').value.trim();
+      const name = document.getElementById('inv-name').value.trim();
+      const role = document.getElementById('inv-role').value;
+      const pw = document.getElementById('inv-pass').value;
+      setMsg('inv-msg', '');
+      if (!email || !/^\S+@\S+\.\S+$/.test(email)) return setMsg('inv-msg', 'Enter a valid email address.', false);
+      if (!pw) return setMsg('inv-msg', 'Confirm your password to send the invitation.', false);
+      const btn = document.getElementById('inv-submit');
+      btn.disabled = true;
+      try {
+        const res = await apiFetch('/api/v1/members', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, role, display_name: name, confirmPassword: pw })
+        });
+        const d = await res.json();
+        if (d.success) {
+          const mail = d.email || {};
+          let msg = `Invited ${d.member.email} as ${ROLE_LABEL[d.member.role] || d.member.role}. `;
+          if (mail.sent) {
+            msg += `Invitation email sent to ${d.member.email}.`;
+          } else {
+            msg += `<b style="color:#fbbf24">Email was NOT sent</b> (${esc(mail.reason || 'mail not configured')}). Share this one-time activation link (valid 7 days): <a href="${esc(location.origin + d.activationLink)}" style="color:#7dd3fc;word-break:break-all;">${esc(location.origin + d.activationLink)}</a>`;
+          }
+          setMsg('inv-msg', msg, !!mail.sent);
+          document.getElementById('inv-email').value = '';
+          document.getElementById('inv-name').value = '';
+          document.getElementById('inv-pass').value = '';
+          loadMembers();
+        } else setMsg('inv-msg', d.error || 'Invite failed.', false);
+      } catch (e) { setMsg('inv-msg', 'Request failed: ' + e.message, false); }
+      btn.disabled = false;
+    }
+
+    async function removeMember(id, email) {
+      if (!confirm(`Remove ${email} from this organisation? They will lose access immediately.`)) return;
+      try {
+        const res = await apiFetch(`/api/v1/members/${encodeURIComponent(id)}`, { method: 'DELETE' });
+        const d = await res.json();
+        if (d.success) { setMsg('inv-msg', `Removed ${email}.`, true); loadMembers(); }
+        else setMsg('inv-msg', d.error || 'Could not remove member.', false);
+      } catch (e) { setMsg('inv-msg', 'Request failed: ' + e.message, false); }
+    }
+
+    async function loadProjects() {
+      const body = document.getElementById('projects-body');
+      if (!body) return;
+      document.getElementById('projects-perm').style.display = can('project:create') ? 'block' : 'none';
+      try {
+        const res = await apiFetch('/api/v1/projects');
+        const d = await res.json();
+        if (!d.success) throw new Error(d.error || 'could not load projects');
+        body.innerHTML = d.projects.length
+          ? d.projects.map(p => `<tr><td><strong>${esc(p.name)}</strong></td><td><code>${esc(p.slug)}</code></td><td style="white-space:nowrap;">${fmtT(p.created_at)}</td></tr>`).join('')
+          : '<tr><td colspan="3"><div class="empty-state"><div class="big">📁</div>No projects yet.</div></td></tr>';
+      } catch (e) {
+        body.innerHTML = `<tr><td colspan="3"><div class="error-state">${esc(e.message)}<br><button class="btn-action" onclick="loadProjects()">Retry</button></div></td></tr>`;
+      }
+    }
+
+    async function createProject() {
+      const name = document.getElementById('proj-name').value.trim();
+      setMsg('proj-msg', '');
+      if (!name) return setMsg('proj-msg', 'Enter a project name.', false);
+      try {
+        const res = await apiFetch('/api/v1/projects', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name })
+        });
+        const d = await res.json();
+        if (d.success) { setMsg('proj-msg', `Created "${d.project.name}".`, true); document.getElementById('proj-name').value = ''; loadProjects(); }
+        else setMsg('proj-msg', d.error || 'Could not create project.', false);
+      } catch (e) { setMsg('proj-msg', 'Request failed: ' + e.message, false); }
+    }
+
+    async function loadSettingsInfo() {
+      try {
+        const p = await (await apiFetch('/api/v1/risk-policy')).json();
+        const pol = p.policy || {};
+        const el = document.getElementById('set-policy');
+        if (el) el.textContent = pol.version
+          ? `v${pol.version} — escalate at ${pol.highThreshold}, low below ${pol.lowThreshold}, auto-deploy ${pol.autoDeployEnabled ? 'ENABLED' : 'disabled'}`
+          : 'Default (no tenant override) — escalate at 70, auto-deploy disabled';
+      } catch {}
+      try {
+        const i = await (await apiFetch('/api/v1/integrations/status')).json();
+        const gh = i.repository.find(r => r.provider === 'github');
+        const el = document.getElementById('set-integrations');
+        if (el) el.textContent = `GitHub: ${gh && gh.ok ? 'connected' : 'not connected'} · CI: ${(i.ci || []).map(c => `${c.name} ${c.configured ? 'configured' : 'not configured'}`).join(', ')} · zero-downtime deployment: unsupported`;
+      } catch {}
+      try {
+        const i = await (await apiFetch('/api/v1/integrations/status')).json();
+        const el = document.getElementById('mail-status');
+        if (el && i.mail) {
+          el.innerHTML = i.mail.ok
+            ? '<span style="color:#34d399;">configured and reachable</span>'
+            : `<span style="color:#fbbf24;">not configured</span> — invitations will produce a link to share instead of an email`;
+          el.title = i.mail.error || '';
+        }
+      } catch {}
+    }
+
+    function renderSettings() {
+      const who = document.getElementById('settings-who');
+      if (who && window.SESSION) who.textContent = `${window.SESSION.user.email} (${ROLE_LABEL[window.SESSION.role] || window.SESSION.role})`;
+      loadMembers();
+      loadProjects();
+      loadSettingsInfo();
+    }
+
+    /* ===== Viewer mode: websites only, no platform internals ===== */
+    const VIEWER_ONLY = new Set(['websites']);
+
+    function isViewer() { return !!(window.SESSION && window.SESSION.role === 'viewer'); }
+
+    /** Hide every navigation item a Viewer must not see. */
+    function applyRoleNavigation() {
+      const viewer = isViewer();
+      document.querySelectorAll('#main-nav .nav-item').forEach(n => {
+        const v = n.dataset.view;
+        const hide = viewer && !VIEWER_ONLY.has(v);
+        n.style.display = hide ? 'none' : '';
+      });
+      // The viewer has no dashboard tabs or admin controls at all.
+      // (Guarded: a missing element must never break the boot sequence.)
+      const search = document.getElementById('topbar-search');
+      if (search) search.style.display = viewer ? 'none' : '';
+      const addBtn = document.getElementById('connect-website-btn');
+      if (addBtn) addBtn.style.display = viewer ? 'none' : '';
+    }
+
+    async function renderWebsites() {
+      const body = document.getElementById('websites-body');
+      if (!body) return;
+      try {
+        const res = await apiFetch('/api/v1/websites');
+        const d = await res.json();
+        if (!d.success) throw new Error(d.error || 'could not load websites');
+        if (!d.websites || !d.websites.length) {
+          body.innerHTML = '<div class="empty-state"><div class="big">🌐</div><strong>No websites connected yet.</strong><br>Your organisation administrator can connect a website from their dashboard.</div>';
+          return;
+        }
+        body.innerHTML = `<div class="stats-grid" style="grid-template-columns:repeat(auto-fill,minmax(260px,1fr));">
+          ${d.websites.map(w => `<div class="stat-card" style="text-align:left;">
+            <div style="font-size:20px;margin-bottom:8px;">🌐</div>
+            <div style="font-size:15px;font-weight:700;">${esc(w.name)}</div>
+            <div style="font-size:11.5px;color:var(--text-secondary);margin-top:2px;">${esc(w.type || 'Website')} · ${esc(w.status || '')}</div>
+            ${w.siteUrl
+              ? `<a class="btn-action" style="display:inline-block;margin-top:12px;text-decoration:none;" href="${esc(w.siteUrl)}" target="_blank" rel="noopener noreferrer">Open website →</a>`
+              : '<div style="margin-top:12px;font-size:11.5px;color:var(--text-secondary);">No URL registered for this site yet.</div>'}
+          </div>`).join('')}
+        </div>`;
+      } catch (e) {
+        body.innerHTML = `<div class="error-state">${esc(e.message)}<br><button class="btn-action" onclick="renderWebsites()">Retry</button></div>`;
+      }
+    }
+
+    /* ===== Activity logs (real events) ===== */
+    function renderActivity() {
+      const el = document.getElementById('activity-list');
+      const items = [];
+      ALL_ISSUES.forEach(i => {
+        items.push({ t: i.reportedAt, txt: `Bug detected — #${i.id} “${i.title}”`, cls: '' });
+        if (i.rootCause) items.push({ t: i.reportedAt, txt: `Analysis completed — #${i.id} (${i.riskLevel || 'unscored'} risk)`, cls: 'ok' });
+        if (i.status === 'AWAITING_ADMIN_APPROVAL') items.push({ t: i.reportedAt, txt: `Admin approval requested — #${i.id}`, cls: 'warn' });
+        if (i.status === 'APPROVED_BY_ADMIN') items.push({ t: i.resolvedAt || i.reportedAt, txt: `Admin approval granted — #${i.id}`, cls: 'ok' });
+        if (i.status === 'RESOLVED_AND_DEPLOYED') items.push({ t: i.resolvedAt, txt: `Production deployment completed — #${i.id}`, cls: 'ok' });
+        if (i.status === 'INVALID_REPORT') items.push({ t: i.reportedAt, txt: `Report rejected (no bug) — #${i.id}`, cls: 'err' });
+        if (i.status === 'FAILED' || i.status === 'REJECTED_BY_ADMIN') items.push({ t: i.resolvedAt || i.reportedAt, txt: `Deployment failed/closed — #${i.id}`, cls: 'err' });
+      });
+      ALL_PIPELINES.forEach(p => {
+        items.push({ t: p.startedAt, txt: `Pipeline ${p.id} started — #${p.issueId} (${p.currentStep})`, cls: '' });
+        if (p.completedAt) items.push({ t: p.completedAt, txt: `Pipeline ${p.id} ${p.status} — #${p.issueId}`, cls: p.status === 'SUCCESS' ? 'ok' : 'warn' });
+      });
+      (window.RECENT_LOGS || []).slice(-15).forEach(l => items.push({ t: new Date().toISOString(), txt: String(l).slice(0, 160), cls: '' }));
+      items.sort((a, b) => new Date(b.t) - new Date(a.t));
+      if (!items.length) { el.innerHTML = '<div class="empty-state"><div class="big">📡</div>No activity yet. Bug detection, analysis, patches and deployments will be logged here.</div>'; return; }
+      el.innerHTML = items.slice(0, 80).map(e => `<div class="timeline-item ${e.cls}">${esc(e.txt)}<div class="timeline-time">${fmtT(e.t)}</div></div>`).join('');
+    }
+
+    async function loadPipelines() {
+      try {
+        const r = await fetch('/api/v1/pipelines');
+        const d = await r.json();
+        ALL_PIPELINES = Array.isArray(d) ? d : (d.pipelines || []);
+      }
+      catch { ALL_PIPELINES = []; }
+    }
+
     window.onload = () => {
+      document.getElementById('set-backend').textContent = BACKEND_URL;
+      route();
       connectWebSocket();
       loadApps();
       loadIssues();
-      setInterval(loadIssues, 3000);
+      loadPipelines().then(() => { renderTesting(); renderDeployments(); });
+      setInterval(async () => { await loadIssues(true); }, 3000);
     };
   </script>
 </body>

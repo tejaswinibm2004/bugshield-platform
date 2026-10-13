@@ -1,0 +1,15 @@
+{
+  "id": "c06-already-fixed",
+  "note": "The defect described is already guarded in the current code.",
+  "report": {
+    "title": "Discount code missing discount calculation",
+    "description": "the discount calculation error returns NaN when a coupon is applied",
+    "page_url": "/checkout"
+  },
+  "expect": {
+    "file": null,
+    "type": null,
+    "validBug": false,
+    "patchable": false
+  }
+}

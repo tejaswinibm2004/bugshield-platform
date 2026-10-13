@@ -1,0 +1,15 @@
+{
+  "id": "c02-missing-await",
+  "note": "Async persistence call is not awaited and has no error handling.",
+  "report": {
+    "title": "Order sometimes not saved after payment",
+    "description": "submitting an order reports success but the record is missing in the database",
+    "page_url": "/orders"
+  },
+  "expect": {
+    "file": "src/orderStore.js",
+    "type": "MISSING_AWAIT",
+    "validBug": true,
+    "patchable": true
+  }
+}

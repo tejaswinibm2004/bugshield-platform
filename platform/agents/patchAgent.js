@@ -1,4 +1,9 @@
-import fs from 'fs';
+import { applyFinding, unifiedDiff, validateJs } from '../services/analyzers.js';
+import { getAiStatus, aiPatch, applyAiEdits } from '../services/aiProvider.js';
+
+function isJsLike(relPath) {
+  return /\.(js|jsx|mjs|cjs|ts|tsx)$/i.test(relPath || '');
+}
 
 export class PatchGenerationAgent {
   constructor() {
@@ -6,78 +11,130 @@ export class PatchGenerationAgent {
     this.id = 'AGENT-PATCH-03';
   }
 
-  async generate(detectionResult, riskResult) {
+  async generate(detectionResult, riskResult, issue = {}) {
     const logs = [];
-    logs.push(`[${this.name}] Synthesizing Code Patch for ${detectionResult.targetFileRel}...`);
+    const { bugType, fullFilePath, fileContent, targetFileRel } = detectionResult;
+    const finding = detectionResult.finding;
 
-    const { bugType, fullFilePath, fileContent } = detectionResult;
+    logs.push(`[${this.name}] Synthesising a code fix for ${targetFileRel} (${bugType})...`);
 
     let updatedCode = fileContent;
     let description = '';
+    let syntaxValid = false;
+    let validationError = '';
 
-    if (bugType === 'UNHANDLED_PROMISE_SAVING_ORDER') {
-      description = 'Add await keyword to saveOrderToDatabase promise call and wrap in try/catch block.';
-      if (fileContent.includes('// FIX:')) {
-        updatedCode = fileContent; // Already patched cleanly
+    if (!finding || !finding.autoFixable) {
+      description = finding
+        ? `A ${bugType} defect was detected but cannot be auto-remediated safely. Manual engineering review required.`
+        : 'No auto-remediable defect identified.';
+      logs.push(`[${this.name}] ⚠️ ${description}`);
+    } else {
+      const patched = applyFinding(fileContent, finding);
+      if (patched == null) {
+        // Pattern fix does not cover this shape (e.g. AI-confirmed cosmetic or
+        // novel bug): fall through to the universal AI patcher below.
+        logs.push(`[${this.name}] Pattern fix does not cover this shape. Trying universal AI patch...`);
       } else {
-        updatedCode = fileContent.replace(
-          /(\/\/\s*BUG:.*\n\s*)?saveOrderToDatabase\(orderData\);/g,
-          `// FIX: Properly await database insertion with error handling\n  try {\n    await saveOrderToDatabase(orderData);\n  } catch (err) {\n    console.error('Order save error:', err);\n  }`
-        );
-      }
-    } else if (bugType === 'COUPON_CALCULATION_DIV_ZERO') {
-      description = 'Add check for invalid/zero discount rates and guard against NaN outputs.';
-      if (fileContent.includes('// FIX:')) {
-        updatedCode = fileContent;
-      } else {
-        updatedCode = fileContent.replace(
-          /(\/\/\s*BUG:.*\n\s*)?const finalDiscount = .*/g,
-          `// FIX: Validated percentage calculation with zero-division safety guard\n  if (!discountPercent || discountPercent <= 0) return subtotal;\n  const safePercent = Math.min(Math.max(discountPercent, 0), 100);\n  const discountAmount = (subtotal * safePercent) / 100;\n  const finalDiscount = Math.max(0, subtotal - discountAmount);\n  return Number.isNaN(finalDiscount) ? subtotal : finalDiscount;`
-        );
-      }
-    } else if (bugType === 'DELIVERY_FEE_UNDEFINED_MULTIPLIER') {
-      description = 'Provide default fallbacks for extended delivery distances (>10km) in delivery service.';
-      if (fileContent.includes('safeMultiplier')) {
-        updatedCode = fileContent;
-      } else {
-        updatedCode = fileContent.replace(
-          /(\/\/\s*BUG:.*\n\s*)?const fee = .*/g,
-          `// FIX: Default fallback multiplier for long distances (>10km)\n  const safeMultiplier = multipliers[tier] || 2.5;\n  const fee = baseFee + (distanceKm * safeMultiplier);`
-        );
+        const v = this.checkSyntax(patched, targetFileRel);
+        syntaxValid = v.ok;
+        if (!v.ok) validationError = v.error;
+        if (v.ok) {
+          updatedCode = patched;
+          description = `${finding.description} Guard applied at line ${finding.line}.`;
+          logs.push(`[${this.name}] Applied remediation derived from the live source: ${finding.evidence}`);
+        } else {
+          description = 'Generated patch failed syntax validation and was discarded.';
+          logs.push(`[${this.name}] ❌ Syntax Check FAILED, patch discarded: ${v.error}`);
+        }
       }
     }
 
-    logs.push(`[${this.name}] Running AST & Syntactical Validation on generated patch...`);
-    
-    // Validate JavaScript syntax using Function constructor
-    let syntaxValid = true;
-    try {
-      const checkCode = updatedCode
-        .replace(/import .*/g, '')
-        .replace(/export (default )?/g, '');
-      new Function(`(async () => { ${checkCode} })`);
-      logs.push(`[${this.name}] AST Syntax Check PASSED: Code is syntactically valid JS.`);
-    } catch (err) {
-      syntaxValid = false;
-      logs.push(`[${this.name}] ERROR: Syntax Validation Failed: ${err.message}`);
+    // Universal fallback: any validated defect gets an AI-synthesised fix.
+    if (!syntaxValid && finding && finding.autoFixable) {
+      const ai = await this.tryAiPatch(detectionResult, issue, logs);
+      if (ai) {
+        updatedCode = ai.updatedCode;
+        description = ai.description;
+        syntaxValid = true;
+      } else if (!description) {
+        description = 'Unable to synthesise a patch for this code shape.';
+      }
     }
 
-    // Produce unified diff snippet
-    const diff = `--- a/${detectionResult.targetFileRel}\n+++ b/${detectionResult.targetFileRel}\n@@ -${detectionResult.lineRange.start},${detectionResult.lineRange.end} @@\n+ ${description}`;
+    logs.push(`[${this.name}] Running syntax validation on the generated patch...`);
+    if (syntaxValid) logs.push(`[${this.name}] Syntax Check PASSED for ${targetFileRel}.`);
 
-    logs.push(`[${this.name}] Code Patch Generated Successfully.`);
+    const diff = syntaxValid ? unifiedDiff(fileContent, updatedCode, targetFileRel) : '';
+    if (diff) logs.push(`[${this.name}] Unified diff produced (${diff.split('\n').filter(l => /^[+-][^+-]/.test(l)).length} changed line(s)).`);
+    logs.push(`[${this.name}] ${syntaxValid ? 'Code patch generated successfully.' : 'No deployable patch produced.'}`);
 
     return {
       agentId: this.id,
       agentName: this.name,
-      targetFileRel: detectionResult.targetFileRel,
-      fullFilePath: detectionResult.fullFilePath,
+      targetFileRel,
+      fullFilePath,
+      sourceRoot: detectionResult.sourceRoot,
       originalCode: fileContent,
       updatedCode,
       diff,
       description,
+      bugType,
       syntaxValid,
+      validationError,
+      riskLevel: riskResult ? riskResult.riskLevel : null,
+      lineEnding: detectionResult.lineEnding || '\n',
       logs
     };
+  }
+
+  checkSyntax(code, relPath) {
+    if (!isJsLike(relPath)) {
+      if (!code || !String(code).trim()) return { ok: false, error: 'AI returned an empty file.' };
+      return { ok: true };
+    }
+    return validateJs(code);
+  }
+
+  async tryAiPatch(detectionResult, issue, logs) {
+    const status = getAiStatus();
+    if (!status.configured) {
+      logs.push(`[${this.name}] Universal AI patch skipped: ${status.reason}`);
+      return null;
+    }
+    logs.push(`[${this.name}] Asking ${status.model} to synthesise a fix for ${detectionResult.targetFileRel}...`);
+    let out;
+    try {
+      out = await aiPatch({
+        issue: { title: issue?.title || '', description: issue?.description || '' },
+        targetFileRel: detectionResult.targetFileRel,
+        fileContent: detectionResult.fileContent,
+        rootCause: detectionResult.rootCauseSummary || detectionResult.finding?.description || ''
+      });
+    } catch (e) {
+      logs.push(`[${this.name}] AI patch failed honestly: ${e.message}`);
+      return null;
+    }
+    let updated;
+    try {
+      updated = String(applyAiEdits(detectionResult.fileContent, out.edits)).replace(/\r\n/g, '\n');
+    } catch (e) {
+      logs.push(`[${this.name}] AI edits rejected for safety: ${e.message}`);
+      return null;
+    }
+    if (!updated.trim() || updated === detectionResult.fileContent) {
+      logs.push(`[${this.name}] AI returned no change; discarding.`);
+      return null;
+    }
+    if (updated.length > detectionResult.fileContent.length * 4 + 5000) {
+      logs.push(`[${this.name}] AI returned a suspiciously large rewrite; discarding for safety.`);
+      return null;
+    }
+    const v = this.checkSyntax(updated, detectionResult.targetFileRel);
+    if (!v.ok) {
+      logs.push(`[${this.name}] AI patch failed syntax validation and was discarded: ${v.error}`);
+      return null;
+    }
+    logs.push(`[${this.name}] Universal AI patch accepted.`);
+    return { updatedCode: updated, description: String(out.description || 'AI-synthesised fix.') };
   }
 }

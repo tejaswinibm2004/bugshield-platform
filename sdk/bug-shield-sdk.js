@@ -10,7 +10,17 @@
     init(config = {}) {
       this.appId = config.appId || 'APP-UNKNOWN';
       this.sdkKey = config.sdkKey || '';
-      const currentScript = document.currentScript || Array.from(document.scripts).find(s => s.src && s.src.includes('bug-shield-sdk.js'));
+      // Scoped ingestion key (preferred). Revocable, origin-scoped, rate limited.
+      this.ingestionKey = config.ingestionKey || '';
+      // ID of the <div> the report button renders into. When the div is absent
+      // (older integrations), the button falls back to a floating action button.
+      this.containerId = config.containerId || 'bugshield-widget';
+      const cs = document.currentScript;
+      // For inline <script> blocks currentScript exists but has no src —
+      // only use it when it actually carries one.
+      const currentScript = (cs && cs.src)
+        ? cs
+        : Array.from(document.scripts).find(s => s.src && s.src.includes('bug-shield-sdk.js'));
       const defaultHost = currentScript ? new URL(currentScript.src).origin : window.location.origin;
       let endpoint = config.endpoint || `${defaultHost}/api/v1/issues`;
 
@@ -61,6 +71,23 @@
         .bugshield-floating-btn:hover {
           transform: translateY(-2px);
           box-shadow: 0 15px 30px -5px rgba(99, 102, 241, 0.7);
+        }
+        .bugshield-inline-btn {
+          background: linear-gradient(135deg, #6366f1, #a855f7);
+          color: #ffffff;
+          border: none;
+          border-radius: 8px;
+          padding: 10px 16px;
+          font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+          font-weight: 600;
+          font-size: 14px;
+          cursor: pointer;
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+        }
+        .bugshield-inline-btn:hover {
+          filter: brightness(1.1);
         }
         .bugshield-modal-backdrop {
           position: fixed;
@@ -153,16 +180,23 @@
       `;
       document.head.appendChild(style);
 
-      // Create Button
+      // Create Button: inside the site's own div when present, otherwise as a
+      // floating action button (backwards compatible with older integrations).
       const btn = document.createElement('button');
-      btn.className = 'bugshield-floating-btn';
+      const mount = document.getElementById(this.containerId);
+      if (mount) {
+        btn.className = 'bugshield-inline-btn';
+        mount.appendChild(btn);
+      } else {
+        btn.className = 'bugshield-floating-btn';
+      }
       btn.innerHTML = `
         <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
         </svg>
         Report an Issue
       `;
-      document.body.appendChild(btn);
+      if (!mount) document.body.appendChild(btn);
 
       // Create Modal
       const backdrop = document.createElement('div');
@@ -204,12 +238,16 @@
         const payload = {
           application_id: this.appId,
           sdk_key: this.sdkKey,
+          // Preferred: a scoped ingestion key with its own origin allow-list and
+          // rate limit. Falls back to the legacy SDK key when not configured.
+          ...(this.ingestionKey ? { ingestion_key: this.ingestionKey } : {}),
           title: issueText,
           description: issueText,
           page_url: window.location.pathname,
           steps_to_reproduce: 'Reported via end-user widget',
           stack_trace: window.lastRecordedErrorStack || '',
-          logs: this.logs,
+          release: window.__BUGSHIELD_RELEASE__ || undefined,
+          logs: this.logs.slice(0, 20),
           browser_info: {
             userAgent: navigator.userAgent,
             viewport: `${window.innerWidth}x${window.innerHeight}`
@@ -219,11 +257,17 @@
         try {
           const res = await fetch(this.endpoint, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'bugshield' },
             body: JSON.stringify(payload)
           });
           const data = await res.json();
-          if (data.success) {
+          if (data.status === 'DEDUPLICATED') {
+            alert(`This error was already reported as #${data.issueId}. We added this occurrence to it.`);
+            form.reset();
+            backdrop.classList.remove('open');
+          } else if (res.status === 429) {
+            alert('Too many reports were just sent. Please wait a moment before reporting again.');
+          } else if (data.success) {
             alert(`✅ Issue Report #${data.issueId} submitted successfully!\nOur AI Multi-Agent platform has received your report and initiated automated diagnosis.`);
             form.reset();
             backdrop.classList.remove('open');

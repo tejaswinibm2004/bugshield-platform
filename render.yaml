@@ -1,11 +1,76 @@
 services:
   - type: web
-    name: bugshield-backend
+    name: bugshield-platform
     runtime: node
-    plan: free
-    buildCommand: npm install
+    plan: starter          # paid: required for a persistent disk
+    region: singapore
+    # SQLite + on-disk workspaces cannot scale horizontally. Keep exactly one
+    # instance so the disk, WAL checkpointing and in-process pipeline agree.
+    numInstances: 1
+    buildCommand: npm ci
     startCommand: npm start
+    healthCheckPath: /api/health
+    # Mount a persistent disk so the SQLite database, uploaded sessions and cloned
+    # repositories survive restarts and redeploys. Without this, every restart
+    # would wipe users, history and the audit trail. Free tier has no disks:
+    # this blueprint requires a paid (Starter+) plan.
+    disk:
+      name: bugshield-data
+      mountPath: /var/data
+      sizeGB: 1
     envVars:
+      # node:sqlite is only available without a flag from Node 23 onward.
+      # Must match .node-version.
       - key: NODE_VERSION
-        value: 22
-
+        value: 24.11.0
+      # Enables Secure session cookies over HTTPS.
+      - key: NODE_ENV
+        value: production
+      # Point all persistent state at the mounted disk.
+      - key: BUGSHIELD_DATA_DIR
+        value: /var/data
+      # Extra browser origins allowed to make credentialed requests.
+      # Add your dashboard's public origin here once you know it, e.g.
+      # https://bugshield.onrender.com
+      # Note: POST /api/v1/issues (SDK ingestion) stays open by design; each
+      # ingestion key enforces its own origin allow-list.
+      - key: ALLOWED_ORIGINS
+        sync: false
+      # Set an explicit owner password so it does not change on every cold start.
+      # Generate with:  node -e "console.log(require('crypto').randomBytes(9).toString('base64url'))"
+      - key: BOOTSTRAP_OWNER_EMAIL
+        sync: false
+      - key: BOOTSTRAP_OWNER_PASSWORD
+        sync: false
+      # Optional integrations - leave unset and the platform reports them as
+      # "not configured" rather than pretending they are connected.
+      - key: SMTP_HOST
+        sync: false
+      - key: SMTP_PORT
+        value: 587
+      - key: SMTP_USER
+        sync: false
+      - key: SMTP_PASS
+        sync: false
+      - key: SMTP_FROM
+        sync: false
+      - key: GITHUB_APP_ID
+        sync: false
+      - key: GITHUB_APP_INSTALLATION_ID
+        sync: false
+      - key: GITHUB_APP_PRIVATE_KEY
+        sync: false
+      - key: JENKINS_URL
+        sync: false
+      - key: JENKINS_TOKEN
+        sync: false
+      - key: HEALTH_CHECK_URL
+        sync: false
+      - key: AI_PROVIDER
+        value: openrouter
+      - key: AI_BASE_URL
+        value: https://openrouter.ai/api/v1
+      - key: AI_MODEL
+        value: openrouter/free
+      - key: AI_API_KEY
+        sync: false

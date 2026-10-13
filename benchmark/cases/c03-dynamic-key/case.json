@@ -1,0 +1,15 @@
+{
+  "id": "c03-dynamic-key",
+  "note": "Object indexed by a key that can hold a value outside the defined keys.",
+  "report": {
+    "title": "Shipping fee returns NaN for long distances",
+    "description": "the delivery shipping fee calculation becomes NaN for distances over 20 km",
+    "page_url": "/shipping"
+  },
+  "expect": {
+    "file": "src/shipping.js",
+    "type": "UNDEFINED_DYNAMIC_KEY",
+    "validBug": true,
+    "patchable": true
+  }
+}

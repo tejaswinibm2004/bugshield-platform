@@ -1,13 +1,23 @@
 import fs from 'fs';
+import os from 'os';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { DatabaseSync } from 'node:sqlite';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const DATA_DIR = path.join(__dirname, '../../data');
+const DEFAULT_DATA_DIR = path.join(__dirname, '../../data');
+
+// The data directory must be configurable so a persistent disk can be mounted
+// (Render) or a writable location provided. On an ephemeral filesystem every
+// deploy would silently destroy users, sessions, history and the audit trail.
+const DATA_DIR = process.env.BUGSHIELD_DATA_DIR
+  ? path.resolve(process.env.BUGSHIELD_DATA_DIR)
+  : DEFAULT_DATA_DIR;
 const LEGACY_JSON_PATH = path.join(DATA_DIR, 'db.json');
 
-let DB_PATH = path.join(DATA_DIR, 'bugshield.db');
+let DB_PATH = process.env.BUGSHIELD_DB_PATH
+  ? path.resolve(process.env.BUGSHIELD_DB_PATH)
+  : path.join(DATA_DIR, 'bugshield.db');
 
 // Support Vercel Serverless environment (/tmp directory)
 if (process.env.VERCEL) {
@@ -17,8 +27,14 @@ if (process.env.VERCEL) {
     if (!fs.existsSync(DATA_DIR)) {
       fs.mkdirSync(DATA_DIR, { recursive: true });
     }
+    // Verify the location is actually writable rather than discovering it later.
+    fs.accessSync(DATA_DIR, fs.constants.W_OK);
   } catch (e) {
-    DB_PATH = path.join('/tmp', 'bugshield.db');
+    console.error(`[database] Data directory ${DATA_DIR} is not writable: ${e.message}`);
+    if (process.env.NODE_ENV === 'production') {
+      console.error('[database] Set BUGSHIELD_DATA_DIR to a persistent volume before running in production.');
+    }
+    DB_PATH = path.join(os.tmpdir(), 'bugshield.db');
   }
 }
 
@@ -97,6 +113,38 @@ export function initSchema() {
       logs TEXT,
       started_at TEXT NOT NULL,
       completed_at TEXT
+    );
+
+    CREATE TABLE IF NOT EXISTS validation_runs (
+      id TEXT PRIMARY KEY,
+      issue_id TEXT NOT NULL,
+      application_id TEXT NOT NULL,
+      patch_applied INTEGER,
+      syntax_passed INTEGER,
+      tests_ran INTEGER,
+      tests_passed INTEGER,
+      test_counts TEXT,
+      security_passed INTEGER,
+      security_findings TEXT,
+      dependency_audit TEXT,
+      behaviour_verified INTEGER,
+      validation_passed INTEGER,
+      evidence TEXT,
+      created_at TEXT NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS deployments (
+      id TEXT PRIMARY KEY,
+      issue_id TEXT NOT NULL,
+      application_id TEXT NOT NULL,
+      strategy TEXT,
+      zero_downtime INTEGER,
+      status TEXT NOT NULL,
+      health TEXT,
+      rolled_back INTEGER,
+      backup_file TEXT,
+      result TEXT,
+      created_at TEXT NOT NULL
     );
   `);
 
@@ -204,3 +252,7 @@ function autoMigrateLegacyData() {
 
 // Run schema setup on import
 initSchema();
+
+// Additive multi-tenancy / identity / audit migrations.
+import { migrateTenancy } from './migrations.js';
+migrateTenancy();

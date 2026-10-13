@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sign in — BugShield</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #07090e; --card: rgba(18,24,38,.8); --border: rgba(255,255,255,.09);
+    --text: #f8fafc; --muted: #94a3b8; --accent: #6366f1; --danger: #f43f5e;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center;
+    background: var(--bg); color: var(--text); padding: 20px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+  }
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 18px; padding: 32px; width: 100%; max-width: 420px; }
+  .brand { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; }
+  .logo { width: 42px; height: 42px; border-radius: 12px; background: linear-gradient(135deg,#6366f1,#06b6d4);
+          display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 18px; }
+  h1 { font-family: 'Outfit', sans-serif; font-size: 22px; margin: 0; }
+  .sub { color: var(--muted); font-size: 13px; margin: 2px 0 0 0; }
+  label { display: block; font-size: 12px; font-weight: 600; color: var(--muted); margin: 14px 0 6px; }
+  input { width: 100%; padding: 11px 13px; border-radius: 9px; border: 1px solid var(--border);
+          background: rgba(255,255,255,.04); color: var(--text); font-size: 14px; font-family: inherit; }
+  input:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+  button { width: 100%; margin-top: 20px; padding: 12px; border: none; border-radius: 9px;
+           background: var(--accent); color: #fff; font-size: 14px; font-weight: 700; cursor: pointer; font-family: inherit; }
+  button:hover:not(:disabled) { background: #4f46e5; }
+  button:disabled { opacity: .6; cursor: wait; }
+  .msg { margin-top: 14px; font-size: 13px; padding: 10px 12px; border-radius: 8px; display: none; }
+  .msg.err { display: block; background: rgba(244,63,94,.1); border: 1px solid rgba(244,63,94,.35); color: #fda4af; }
+  .note { margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--border);
+          font-size: 12px; color: var(--muted); line-height: 1.6; }
+  code { background: rgba(0,0,0,.35); padding: 2px 6px; border-radius: 4px; font-size: 11px; color: #a7f3d0; }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="brand">
+    <div class="logo">BS</div>
+    <div><h1 id="auth-title">Sign in</h1><p class="sub" id="auth-sub">Multi-Agent Bug Detection &amp; Secure Deployment</p></div>
+  </div>
+  <form id="f">
+    <label for="email">Email</label>
+    <input id="email" name="email" type="email" autocomplete="username" required autofocus>
+    <label for="password" id="lbl-pass">Password</label>
+    <input id="password" name="password" type="password" autocomplete="current-password" required>
+    <button id="submit" type="submit">Sign in</button>
+  </form>
+  <div class="msg" id="msg"></div>
+  <div class="note">
+    Access is restricted to invited organisation members. End-user bug reports from connected
+    websites are posted to <code>/api/v1/issues</code> using a restricted ingestion key and do not
+    require an account.
+  </div>
+</div>
+<script>
+  const form = document.getElementById('f');
+  const msg = document.getElementById('msg');
+  const btn = document.getElementById('submit');
+  const titleEl = document.getElementById('auth-title');
+  const subEl = document.getElementById('auth-sub');
+  const emailEl = document.getElementById('email');
+  const passEl = document.getElementById('password');
+  const lblPass = document.getElementById('lbl-pass');
+
+  // Already signed in? Go straight through.
+  fetch('/api/v1/auth/me', { headers: { 'X-Requested-With': 'bugshield' } })
+    .then(r => { if (r.ok) location.replace('/'); })
+    .catch(() => {});
+
+  // Activation mode: /login#activate=<token>
+  let mode = 'login';
+  let token = '';
+  function setMode(m, t) {
+    mode = m; token = t || '';
+    if (m === 'activate') {
+      titleEl.textContent = 'Activate your account';
+      subEl.textContent = 'Choose a password to finish setting up your account';
+      lblPass.textContent = 'Choose a password';
+      passEl.setAttribute('autocomplete', 'new-password');
+      btn.textContent = 'Activate account';
+    } else {
+      titleEl.textContent = 'Sign in';
+      subEl.textContent = 'Multi-Agent Bug Detection & Secure Deployment';
+      lblPass.textContent = 'Password';
+      passEl.setAttribute('autocomplete', 'current-password');
+      btn.textContent = 'Sign in';
+    }
+  }
+  function readHash() {
+    const h = location.hash || '';
+    if (h.startsWith('#activate=')) setMode('activate', decodeURIComponent(h.slice('#activate='.length)));
+    else setMode('login');
+  }
+  window.addEventListener('hashchange', readHash);
+  readHash();
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    btn.disabled = true; btn.textContent = mode === 'activate' ? 'Activating…' : 'Signing in…';
+    msg.className = 'msg'; msg.textContent = '';
+    try {
+      const body = mode === 'activate'
+        ? { email: emailEl.value, token, newPassword: passEl.value }
+        : { email: emailEl.value, password: passEl.value };
+      const path = mode === 'activate' ? '/api/v1/auth/accept-invite' : '/api/v1/auth/login';
+      const res = await fetch(path, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'bugshield' },
+        body: JSON.stringify(body)
+      });
+      const data = await res.json();
+      if (mode === 'activate') {
+        if (data.success) { msg.className = 'msg ok'; msg.style.cssText = 'display:block;background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.35);color:#6ee7b7'; msg.textContent = data.message; history.replaceState(null,'','/login'); setMode('login'); }
+        else { msg.className = 'msg err'; msg.textContent = data.error || 'Activation failed.'; }
+      } else if (data.success) location.replace('/');
+      else { msg.className = 'msg err'; msg.textContent = data.error || 'Sign in failed.'; }
+    } catch {
+      msg.className = 'msg err'; msg.textContent = 'Cannot reach the server.';
+    } finally {
+      btn.disabled = false; btn.textContent = mode === 'activate' ? 'Activate account' : 'Sign in';
+    }
+  });
+</script>
+</body>
+</html>
