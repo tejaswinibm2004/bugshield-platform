@@ -1355,9 +1355,16 @@ container.innerHTML = apps.map(app => `
     function pipeOf(issueId) { return ALL_PIPELINES.find(p => p.issueId === issueId) || null; }
     async function getPatchCached(issueId) {
       if (PATCH_CACHE[issueId] !== undefined) return PATCH_CACHE[issueId];
-      try { const r = await fetch(`/api/v1/issues/${issueId}/patch`); PATCH_CACHE[issueId] = await r.json(); }
-      catch { PATCH_CACHE[issueId] = null; }
-      return PATCH_CACHE[issueId];
+      try {
+        const r = await fetch(`/api/v1/issues/${issueId}/patch`);
+        const data = await r.json();
+        // Never cache a miss: the detail page is often opened while the
+        // pipeline is still running, and a cached null would hide the patch
+        // forever ("Not generated" after it actually deployed).
+        if (data) PATCH_CACHE[issueId] = data;
+        return data;
+      }
+      catch { return null; }
     }
     // The API stores generated code inside patchResult; normalise both shapes so the UI always shows real data.
     function patchInfo(p) {

@@ -73,9 +73,19 @@ export class CanaryDeploymentAgent {
       fs.copyFileSync(target, backup);
       logs.push(`[${this.name}] Step 4: Backed up original file to ${path.basename(backup)}.`);
       const lineEnding = patchResult.lineEnding || '\n';
+      const expected = patchResult.updatedCode.replace(/\r?\n/g, '\n');
       fs.writeFileSync(target, patchResult.updatedCode.replace(/\r?\n/g, lineEnding), 'utf-8');
-      const v = validateJs(fs.readFileSync(target, 'utf-8').replace(/\r\n/g, '\n'));
-      if (!v.ok) throw new Error(`post-write validation failed: ${v.error}`);
+      // Integrity first (all file types): the bytes on disk must equal the
+      // validated candidate. Syntax parsing second, JS-like files only —
+      // running a JS parser over CSS/HTML always fails and false-rolls-back.
+      const onDisk = fs.readFileSync(target, 'utf-8').replace(/\r\n/g, '\n');
+      if (onDisk !== expected) throw new Error('post-write verification failed: disk content differs from the validated candidate.');
+      if (/\.(js|jsx|mjs|cjs|ts|tsx)$/i.test(patchResult.targetFileRel || '')) {
+        const v = validateJs(onDisk);
+        if (!v.ok) throw new Error(`post-write validation failed: ${v.error}`);
+      } else {
+        logs.push(`[${this.name}] Non-JS target (${patchResult.targetFileRel}): byte-integrity verified, no parser available for this type.`);
+      }
       writeSuccess = true;
       logs.push(`[${this.name}] ✅ Live source file updated and re-validated on disk.`);
     } catch (err) {
@@ -132,7 +142,7 @@ export class CanaryDeploymentAgent {
     const strategy = 'in-place source update';
     logs.push(`[${this.name}] Strategy: ${strategy}. This is NOT a zero-downtime strategy — no blue/green or rolling adapter is configured for this target.`);
     logs.push(`[${this.name}] Outcome: ${rolledBack ? 'rolled back to the previous file' : writeSuccess ? 'file updated on disk' : 'deployment failed'}.`);
-    if (!health.performed) logs.push(`[${this.name}] Verification scope: disk write and syntax re-validation only. Live traffic health was NOT verified.`);
+    if (!health.performed) logs.push(`[${this.name}] Verification scope: disk write with byte-integrity check (plus syntax re-validation for JS targets) only. Live traffic health was NOT verified.`);
 
     return {
       agentId: this.id,

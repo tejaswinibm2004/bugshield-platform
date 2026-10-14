@@ -20,7 +20,7 @@
  */
 
 const DEFAULT_BASE_URL = 'https://openrouter.ai/api/v1';
-const DEFAULT_MODEL = 'openrouter/free';
+const DEFAULT_MODEL = 'cohere/north-mini-code:free';
 const DEFAULT_PROVIDER = 'openrouter';
 
 function getApiKey() {
@@ -221,7 +221,13 @@ async function callChatCompletions({ status, apiKey, system, user, maxTokens, te
   }
   const data = await res.json();
   const content = data?.choices?.[0]?.message?.content;
-  if (!content) throw new Error('AI provider returned no content.');
+  if (!content) {
+    const finish = data?.choices?.length
+      ? (data.choices[0].finish_reason || 'unknown')
+      : 'no-choices';
+    const errMsg = data?.error?.message || '';
+    throw new Error(`AI provider returned no content (finish_reason=${finish}${errMsg ? '; ' + errMsg.slice(0, 200) : ''}).`);
+  }
   return extractJson(content);
 }
 
@@ -244,24 +250,31 @@ export async function chatJson({ system, user, maxTokens = 2000, temperature }) 
 
 /** Assessment prompt: map any user report onto a real file. */
 export async function aiAssess({ issue, candidates }) {
-  const filesBlock = candidates
-    .map(c => `--- ${c.rel} (first ${c.snippet.length} chars) ---\n${c.snippet}`)
+  const buildBlock = (perFile, maxFiles) => candidates
+    .slice(0, maxFiles)
+    .map(c => `--- ${c.rel} ---\n${c.snippet.slice(0, perFile)}`)
     .join('\n\n')
-    .slice(0, 24000);
-  return chatJson({
-    system: 'You are BugShield, a precise code reviewer. Given a user bug report and file snippets, decide whether a genuine defect exists in the shown code. Reply with JSON only: {"isValidBug": boolean, "targetFile": string (exact rel path from the list, or ""), "line": number, "bugType": string (SHORT_SNAKE like COSMETIC_TEXT or CSS_LAYOUT), "rootCause": string (one sentence, quotes the faulty code), "confidence": number 0-1}. Never invent files. If the report does not match the shown code, set isValidBug false.',
-    user: `REPORT title: ${issue.title}\ndescription: ${issue.description || ''}\npage: ${issue.pageUrl || issue.page_url || ''}\nstack: ${(issue.stackTrace || issue.stack_trace || '').slice(0, 2000)}\n\nFILES:\n${filesBlock}`,
-    // Reasoning models spend tokens thinking; keep headroom so content survives.
-    maxTokens: 2000
-  });
+    .slice(0, maxFiles * perFile + 2000);
+  const system = 'You are BugShield, a precise code reviewer. Given a user bug report and file snippets, decide whether a genuine defect exists in the shown code. Reply with ONLY a single JSON object, no other text, no markdown, under 300 tokens: {"isValidBug": boolean, "targetFile": string (exact rel path from the list, or ""), "line": number, "bugType": string (SHORT_SNAKE like COSMETIC_TEXT or CSS_LAYOUT), "rootCause": string (one short sentence), "confidence": number 0-1}. Never invent files. If the report does not match the shown code, set isValidBug false.';
+  const userOf = (filesBlock) => `REPORT title: ${issue.title}\ndescription: ${issue.description || ''}\npage: ${issue.pageUrl || issue.page_url || ''}\nstack: ${(issue.stackTrace || issue.stack_trace || '').slice(0, 2000)}\n\nFILES:\n${filesBlock}`;
+  try {
+    // This model family reasons before answering and reasoning tokens share
+    // the output budget — keep generous headroom so content survives.
+    return await chatJson({ system, user: userOf(buildBlock(3500, 4)), maxTokens: 8000 });
+  } catch (e) {
+    // Truncated reply (finish_reason=length): retry once with a minimal
+    // payload instead of failing the whole assessment.
+    if (!/finish_reason=length/.test(e.message)) throw e;
+    return await chatJson({ system, user: userOf(buildBlock(1500, 2)), maxTokens: 4000 });
+  }
 }
 
 /** Patch prompt: return minimal search/replace edits, not the whole file. */
 export async function aiPatch({ issue, targetFileRel, fileContent, rootCause }) {
   const content = await chatJson({
-    system: 'You are BugShield, a careful patch generator. Fix the confirmed defect with the smallest possible change. Reply with JSON only: {"edits": [{"find": string (exact snippet copied verbatim from the original file, 1-6 lines, enough to be unique), "replace": string (fixed snippet)}], "description": string (one sentence, what changed and where)}. Rules: copy "find" character-for-character from the original (whitespace included); keep each edit minimal; never reformat unrelated code; at most 5 edits.',
+    system: 'You are BugShield, a careful patch generator. Fix the confirmed defect with the smallest possible change. Reply with ONLY a single JSON object, no other text, no markdown, under 400 tokens: {"edits": [{"find": string (exact snippet copied verbatim from the original file, 1-6 lines, enough to be unique), "replace": string (fixed snippet)}], "description": string (one sentence, what changed and where)}. Rules: copy "find" character-for-character from the original (whitespace included); keep each edit minimal; never reformat unrelated code; at most 5 edits.',
     user: `REPORT: ${issue.title} — ${issue.description || ''}\nFILE: ${targetFileRel}\nROOT CAUSE: ${rootCause}\n\nORIGINAL FILE:\n${String(fileContent).slice(0, 30000)}`,
-    maxTokens: 2000
+    maxTokens: 4000
   });
   if (!content || !Array.isArray(content.edits) || !content.edits.length) {
     throw new Error('AI patch reply had no edits.');
